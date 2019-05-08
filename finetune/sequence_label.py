@@ -100,8 +100,8 @@ def create_model(args,
     # new_enc_out, attn_scores, max_js = classifier_concat_maxAttn1_middle(enc_out,self_attn_mask) #1 yesterday
     # new_enc_out, attn_scores, max_js = classifier_concat_maxAttnLeft1Right1_middle(enc_out,self_attn_mask) #1 yesterday
 
-    # new_enc_out, attn_scores, max_js = classifier_weightedAdd_all_attention(enc_out,self_attn_mask) #2
-    new_enc_out, attn_scores, max_js = classifier_weightedAdd_all_attention_concat_middle(enc_out, self_attn_mask) #1 micro new
+    new_enc_out, attn_scores, max_js = classifier_weightedAdd_all_attention(enc_out,self_attn_mask) #2
+    # new_enc_out, attn_scores, max_js = classifier_weightedAdd_all_attention_concat_middle(enc_out, self_attn_mask) #1 micro new
 
     logits = fluid.layers.fc(
         input=new_enc_out,

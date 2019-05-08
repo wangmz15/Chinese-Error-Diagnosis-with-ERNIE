@@ -236,6 +236,7 @@ def get_test_seg():
 
 
         train_w = csv.writer(test, delimiter="\t")
+        train_w.writerow(['text_a', 'label'])
         txts, tags = [], []
         for id, (txt, tag) in test_data.items():
             txts.append(''.join(txt))
@@ -259,18 +260,19 @@ def cut_sent_short(para, tag):
     else:
         return [para], [tag]
 
+LEN = 34
 def cut_short(final_txt, final_tag):
     new_txt, new_tag = [], []
     split_list = ['，',',']
     for txt, tag in zip(final_txt,final_tag):
-        if len(tag) <= 32:
+        if len(tag) <= LEN:
             if len(tag) <= 5:
                 continue
             new_txt.append(txt)
             new_tag.append(tag)
         else:
-            pos = min(63, len(tag)-1)
-            start = 32
+            pos = min(LEN*2-1, len(tag)-1)
+            start = LEN
             try:
                 while pos > start:
                     if txt[pos] in split_list:
@@ -278,7 +280,7 @@ def cut_short(final_txt, final_tag):
                             new_txt.append(txt[start: pos+1])
                             new_tag.append(tag[start: pos+1])
                         start = pos+1
-                        pos = min(pos+32, len(tag))
+                        pos = min(pos+LEN, len(tag))
                     pos -= 1
             except:
                 print(txt)
@@ -314,8 +316,8 @@ def get_cut_sent_test():
 
 
 if __name__ == "__main__":
-    # get_test()
+    get_test()
     # get_train_dev()
-    get_train_dev_seg()
+    # get_train_dev_seg()
     # get_test_seg()
-    # get_cut_sent_test()
+    get_cut_sent_test()

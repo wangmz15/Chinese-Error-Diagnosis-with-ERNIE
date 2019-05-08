@@ -105,13 +105,13 @@ def multi_head_attention(queries,
         trans_x = layers.transpose(x, perm=[0, 2, 1, 3])
         # The value 0 in shape attr means copying the corresponding dimension
         # size of the input as the output dimension size.
-        print('before', trans_x)
+        # print('before', trans_x)
 
         re = layers.reshape(
             x=trans_x,
             shape=[0, 0, trans_x.shape[2] * trans_x.shape[3]],
             inplace=True)
-        print('reshape', re)
+        # print('reshape', re)
         return re
 
     def scaled_dot_product_attention(q, k, v, attn_bias, d_key, dropout_rate, attention_only = False):
@@ -155,16 +155,19 @@ def multi_head_attention(queries,
                 cache["v"], shape=[0, 0, d_model]), v], axis=1)
 
     # print(q.shape, k.shape, v.shape)
-    q = __split_heads(q, n_head)
-    k = __split_heads(k, n_head)
-    v = __split_heads(v, n_head)
+    if n_head > 1:
+        q = __split_heads(q, n_head)
+        k = __split_heads(k, n_head)
+        v = __split_heads(v, n_head)
     # print(q.shape, k.shape, v.shape)
 
     ctx_multiheads = scaled_dot_product_attention(q, k, v, attn_bias, d_key,
                                                   dropout_rate, attention_only=attention_only)
     # print('ctx_multiheads:', ctx_multiheads)
-
-    out = __combine_heads(ctx_multiheads)
+    if n_head > 1:
+        out = __combine_heads(ctx_multiheads)
+    else:
+        out = ctx_multiheads
     # print('out:', out)
 
 

@@ -102,20 +102,20 @@ python -u run_sequence_labeling.py \
 
 #!/usr/bin/env bash
 export FLAGS_sync_nccl_allreduce=1
-export CUDA_VISIBLE_DEVICES=3
-#export LD_LIBRARY_PATH='/usr/local/cuda-9.0/lib64'
+export CUDA_VISIBLE_DEVICES=7
+export LD_LIBRARY_PATH='/usr/local/cuda-9.0/lib64'
 #export LD_LIBRARY_PATH='~/.conda/envs/env36/lib'
 #export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
-export LD_LIBRARY_PATH=/data/disk1/private/zhaoxinhao/.conda/pkgs/nccl-1.3.5-cuda9.0_0/lib:$LD_LIBRARY_PATH
+#export LD_LIBRARY_PATH=/data/disk1/private/zhaoxinhao/.conda/pkgs/nccl-1.3.5-cuda9.0_0/lib:$LD_LIBRARY_PATH
 TASK_DATA_PATH='/data/disk1/private/wangmuzi/data/ERNIE/cged_seg'
 MODEL_PATH='/data/disk1/private/wangmuzi/data/ERNIE/pretrain_model'
 python -u run_sequence_labeling.py \
                    --use_cuda true \
                    --do_train true \
                    --do_val false \
-                   --do_test false \
+                   --do_test true \
                    --verbose false \
-                   --batch_size 64 \
+                   --batch_size 32 \
                    --num_labels 9 \
                    --label_map_config ${TASK_DATA_PATH}/label_map.json \
                    --train_set ${TASK_DATA_PATH}/train.tsv \
@@ -126,14 +126,17 @@ python -u run_sequence_labeling.py \
                    --save_steps 400 \
                    --weight_decay  0.01 \
                    --warmup_proportion 0.002 \
-                   --epoch 500 \
-                   --validation_steps 500 \
+                   --epoch 100 \
+                   --validation_steps 100 \
                    --max_seq_len 32 \
                    --learning_rate 5e-5 \
                    --skip_steps 100 \
                    --num_iteration_per_drop_scope 1 \
                    --random_seed 1 \
-                  --checkpoints ${TASK_DATA_PATH}/classifier_concat_attention1_middle \
+                   --checkpoints ${TASK_DATA_PATH}/classifier_weightedAdd_all_attention \
+                   --init_checkpoint ${TASK_DATA_PATH}/old_checkpoints/origin/step_420001
+
+
 
                     --checkpoints ${TASK_DATA_PATH}/classifier_weightedAdd_all_attention_concat_middle \
                    --init_checkpoint ${TASK_DATA_PATH}/old_checkpoints/classifier_weightedAdd_all_attention_concat_middle/test_0.378941_step_228900

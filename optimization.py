@@ -60,6 +60,7 @@ def optimization(loss,
                  scheduler='linear_warmup_decay',
                  use_fp16=False,
                  loss_scaling=1.0):
+    print(warmup_steps)
     if warmup_steps > 0:
         if scheduler == 'noam_decay':
             scheduled_lr = fluid.layers.learning_rate_scheduler\
@@ -72,6 +73,7 @@ def optimization(loss,
             raise ValueError("Unkown learning rate scheduler, should be "
                              "'noam_decay' or 'linear_warmup_decay'")
         optimizer = fluid.optimizer.Adam(learning_rate=scheduled_lr)
+        print(optimizer)
     else:
         optimizer = fluid.optimizer.Adam(learning_rate=learning_rate)
         scheduled_lr = learning_rate
@@ -123,8 +125,9 @@ def optimization(loss,
         for param in train_program.global_block().all_parameters():
             param_list[param.name] = param * 1.0
             param_list[param.name].stop_gradient = True
-
+            # print(param.name)
         _, param_grads = optimizer.minimize(loss)
+        print('!!!!!!!!!!!!!!!!!!!!!!!!!!!')
 
         if weight_decay > 0:
             for param, grad in param_grads:

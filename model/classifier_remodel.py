@@ -274,25 +274,40 @@ def classifier_concat_maxAttn1_middle(enc_out,self_attn_mask):
         dropout_rate=0.0,param_initializer=None,name= 'classifier_att_score',attention_only=True)
 
     a_sent_scores = layers.split(attn_scores, attn_scores.shape[1], 1)
+    # print(a_sent_scores[31])
     a_sent = layers.split(enc_out, enc_out.shape[1], 1)
+    # print(a_sent[31])
     new_words = [layers.create_tensor(dtype='float32')] * enc_out.shape[1]
-    max_js = layers.fill_constant(shape=[1], dtype='float32', value=0.0)
     indices_list = []
     word_scores_removej_list = []
     for j, [word_scores, word_vec] in enumerate(zip(a_sent_scores, a_sent)):
-        word_scores_removej = layers.concat([l for i,l in enumerate(layers.split(word_scores, word_scores.shape[2], 2)) if i!=j], axis=2)
+        # word_scores = word_scores[0:j] + word_scores[j+1:len(word_scores)]
+        # word_scores_removej = layers.concat(word_scores, axis=2)
+        # for t in word_scores:
+        #     t.stop_gradient=True
+        # print(j)
+        # print(word_scores[31])
+        word_scores_removej = layers.concat([l for i,l in enumerate(layers.split(word_scores, word_scores.shape[2], 2)) if i != j], axis=2)
         # word_scores_removej_list.append(word_scores_removej)
 
         max_j = layers.argmax(word_scores_removej, axis=2)
         indices = layers.one_hot(max_j, word_scores_removej.shape[-1])
         indices_list.append(indices)
         indices = layers.unsqueeze(layers.cast(indices, dtype='float32'),[1])
-        enc_out_removej = layers.concat([l for i,l in enumerate(layers.split(enc_out, enc_out.shape[1], 1)) if i != j], axis=1)
+        # for t in enc_out_split:
+        #     t.stop_gradient=True
+        # enc_out_split = enc_out_split[0:j] + enc_out_split[j+1:len(enc_out_split)]
+        # enc_out_removej = layers.concat(enc_out_split, axis=1)
+
+        # print(enc_out_split[31])
+        # print(len(enc_out_split))
+        enc_out_removej = layers.concat([l for p,l in enumerate(layers.split(enc_out, enc_out.shape[1], 1)) if p != j], axis=1)
+
         new_words[j] = layers.concat([word_vec, layers.matmul(indices, enc_out_removej)], axis=2)
     # attn_scores = layers.concat(word_scores_removej_list, axis=1)
     max_js = layers.concat(indices_list, axis=1)
     new_enc_out = layers.concat(new_words, axis=1)
-    print(new_enc_out)
+    # print(new_enc_out)
     return new_enc_out, attn_scores, max_js
 
 
@@ -346,21 +361,24 @@ def classifier_concat_maxAttnLeft1Right1_middle(enc_out,self_attn_mask):
 
 
 def classifier_weightedAdd_all_attention(enc_out,self_attn_mask):
-    n_head_self_attn_mask = fluid.layers.stack(
-        x=[self_attn_mask] * 1, axis=1)
-    n_head_self_attn_mask.stop_gradient = True
+    # n_head_self_attn_mask = fluid.layers.stack(
+    #     x=[self_attn_mask] * 1, axis=1)
+    # n_head_self_attn_mask.stop_gradient = True
     attn_scores = multi_head_attention(
         pre_process_layer(enc_out,'da',0.0,name='classifier_pre_att'),
-        None,None,attn_bias=n_head_self_attn_mask,
+        None,None,attn_bias=self_attn_mask,
         d_key=768,d_value=768,d_model=768,n_head=1,
         dropout_rate=0.0,param_initializer=None,name= 'classifier_att_score',attention_only=True)
-    a_sent_scores = layers.split(attn_scores, attn_scores.shape[1], 1)
-    a_sent = layers.split(enc_out, enc_out.shape[1], 1)
-    new_words = [layers.create_tensor(dtype='float32')] * enc_out.shape[1]
-    max_js = layers.fill_constant(shape=[1], dtype='float32', value=0.0)
-    for j, [word_scores, word_vec] in enumerate(zip(a_sent_scores, a_sent)):
-        new_words[j] = layers.matmul(word_scores,enc_out)
-    new_enc_out = layers.concat(new_words, axis=1)
+    # a_sent_scores = layers.split(attn_scores, attn_scores.shape[1], 1)
+    # a_sent = layers.split(enc_out, enc_out.shape[1], 1)
+    # new_words = [layers.create_tensor(dtype='float32')] * enc_out.shape[1]
+    # max_js = layers.fill_constant(shape=[1], dtype='float32', value=0.0)
+    # for j, [word_scores, word_vec] in enumerate(zip(a_sent_scores, a_sent)):
+    #     new_words[j] = layers.matmul(word_scores,enc_out)
+    # new_enc_out = layers.concat(new_words, axis=1)
+
+    new_enc_out = layers.matmul(attn_scores,enc_out)
+    max_js = None
     return new_enc_out, attn_scores, max_js
 
 def classifier_weightedAdd_all_attention_concat_middle(enc_out,self_attn_mask):
