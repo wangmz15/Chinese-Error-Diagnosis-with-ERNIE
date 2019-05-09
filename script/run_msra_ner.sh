@@ -102,7 +102,7 @@ python -u run_sequence_labeling.py \
 
 #!/usr/bin/env bash
 export FLAGS_sync_nccl_allreduce=1
-export CUDA_VISIBLE_DEVICES=7
+export CUDA_VISIBLE_DEVICES=1
 export LD_LIBRARY_PATH='/usr/local/cuda-9.0/lib64'
 #export LD_LIBRARY_PATH='~/.conda/envs/env36/lib'
 #export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
@@ -126,15 +126,22 @@ python -u run_sequence_labeling.py \
                    --save_steps 400 \
                    --weight_decay  0.01 \
                    --warmup_proportion 0.002 \
-                   --epoch 100 \
-                   --validation_steps 100 \
+                   --epoch 500 \
+                   --validation_steps 200 \
                    --max_seq_len 32 \
                    --learning_rate 5e-5 \
                    --skip_steps 100 \
                    --num_iteration_per_drop_scope 1 \
                    --random_seed 1 \
-                   --checkpoints ${TASK_DATA_PATH}/classifier_weightedAdd_all_attention \
+                   --checkpoints ${TASK_DATA_PATH}/classifier_concat_left_middle_right \
+                   --init_pretraining_params ${MODEL_PATH}/params
+
+
                    --init_checkpoint ${TASK_DATA_PATH}/old_checkpoints/origin/step_420001
+
+
+                   --checkpoints ${TASK_DATA_PATH}/classifier_weightedAdd_all_attention \
+                   --init_checkpoint ${TASK_DATA_PATH}/old_checkpoints/classifier_weightedAdd_all_attention/test_step_367400_0.377421
 
 
 
@@ -148,9 +155,9 @@ python -u run_sequence_labeling.py \
                    --init_checkpoint ${TASK_DATA_PATH}/old_checkpoints/classifier_concat_maxAttn1_middle/test_step_71900_0.377232
 
 
-                                      --checkpoints ${TASK_DATA_PATH}/origin1 \
+                   --checkpoints ${TASK_DATA_PATH}/origin1 \
                    --init_checkpoint ${TASK_DATA_PATH}/old_checkpoints/origin/step_420001
-                                      --init_pretraining_params ${MODEL_PATH}/params
+
 
 
 export FLAGS_sync_nccl_allreduce=1

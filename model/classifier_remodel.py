@@ -3,9 +3,6 @@ import paddle.fluid as fluid
 import paddle.fluid.layers as layers
 from model.transformer_encoder import *
 
-def origin32(enc_out):
-    return enc_out
-
 def classifier_concat_left_middle_right(enc_out):
     words = layers.split(enc_out,enc_out.shape[1],1)
     new_words = [layers.create_tensor(dtype='float32')]*enc_out.shape[1]
@@ -382,20 +379,23 @@ def classifier_weightedAdd_all_attention(enc_out,self_attn_mask):
     return new_enc_out, attn_scores, max_js
 
 def classifier_weightedAdd_all_attention_concat_middle(enc_out,self_attn_mask):
-    n_head_self_attn_mask = fluid.layers.stack(
-        x=[self_attn_mask] * 1, axis=1)
-    n_head_self_attn_mask.stop_gradient = True
+    # n_head_self_attn_mask = fluid.layers.stack(
+    #     x=[self_attn_mask] * 1, axis=1)
+    # n_head_self_attn_mask.stop_gradient = True
     attn_scores = multi_head_attention(
         pre_process_layer(enc_out,'da',0.0,name='classifier_pre_att'),
-        None,None,attn_bias=n_head_self_attn_mask,
+        None,None,attn_bias=self_attn_mask,
         d_key=768,d_value=768,d_model=768,n_head=1,
-        dropout_rate=0.0,param_initializer=None,name= 'classifier_att_score',attention_only=True)
-    a_sent_scores = layers.split(attn_scores, attn_scores.shape[1], 1)
-    a_sent = layers.split(enc_out, enc_out.shape[1], 1)
-    new_words = [layers.create_tensor(dtype='float32')] * enc_out.shape[1]
-    max_js = layers.fill_constant(shape=[1], dtype='float32', value=0.0)
-    for j, [word_scores, word_vec] in enumerate(zip(a_sent_scores, a_sent)):
-        new_words[j] = layers.concat([word_vec,layers.matmul(word_scores,enc_out)], axis=2)
-    new_enc_out = layers.concat(new_words, axis=1)
+        dropout_rate=0.0,param_initializer=None,name= 'classifier_att_score',attention_only=True, need_combine=False)
+    # a_sent_scores = layers.split(attn_scores, attn_scores.shape[1], 1)
+    # a_sent = layers.split(enc_out, enc_out.shape[1], 1)
+    # new_words = [layers.create_tensor(dtype='float32')] * enc_out.shape[1]
+    # max_js = layers.fill_constant(shape=[1], dtype='float32', value=0.0)
+    # for j, [word_scores, word_vec] in enumerate(zip(a_sent_scores, a_sent)):
+    #     new_words[j] = layers.concat([word_vec,layers.matmul(word_scores,enc_out)], axis=2)
+    # new_enc_out = layers.concat(new_words, axis=1)
+    to_concat = layers.matmul(attn_scores,enc_out)
+    new_enc_out = layers.concat([enc_out, to_concat], 2)
+    max_js = None
     print(new_enc_out)
     return new_enc_out, attn_scores, max_js

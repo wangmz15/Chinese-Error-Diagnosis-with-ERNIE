@@ -36,7 +36,8 @@ def multi_head_attention(queries,
                          cache=None,
                          param_initializer=None,
                          name='multi_head_att',
-                         attention_only = False):
+                         attention_only = False,
+                         need_combine = False):
     """
     Multi-Head Attention. Note that attn_bias is added to the logit before
     computing softmax activiation to mask certain selected positions so that
@@ -121,8 +122,8 @@ def multi_head_attention(queries,
         scaled_q = layers.scale(x=q, scale=d_key ** -0.5)
         product = layers.matmul(x=scaled_q, y=k, transpose_y=True)
         if attn_bias:
-            # print('attn_bias', attn_bias)
-            # print('product', product)
+            print('attn_bias', attn_bias)
+            print('product', product)
             product += attn_bias
 
         weights = layers.softmax(product)
