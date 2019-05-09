@@ -102,7 +102,7 @@ python -u run_sequence_labeling.py \
 
 #!/usr/bin/env bash
 export FLAGS_sync_nccl_allreduce=1
-export CUDA_VISIBLE_DEVICES=1
+export CUDA_VISIBLE_DEVICES=7
 export LD_LIBRARY_PATH='/usr/local/cuda-9.0/lib64'
 #export LD_LIBRARY_PATH='~/.conda/envs/env36/lib'
 #export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
@@ -115,12 +115,12 @@ python -u run_sequence_labeling.py \
                    --do_val false \
                    --do_test true \
                    --verbose false \
-                   --batch_size 32 \
+                   --batch_size 64 \
                    --num_labels 9 \
                    --label_map_config ${TASK_DATA_PATH}/label_map.json \
-                   --train_set ${TASK_DATA_PATH}/train.tsv \
-                   --dev_set ${TASK_DATA_PATH}/valid.tsv \
-                   --test_set ${TASK_DATA_PATH}/test_cut_short.tsv \
+                   --train_set ${TASK_DATA_PATH}/train62.tsv \
+                   --dev_set ${TASK_DATA_PATH}/valid62.tsv \
+                   --test_set ${TASK_DATA_PATH}/test62.tsv \
                    --vocab_path config/vocab.txt \
                    --ernie_config_path config/ernie_config.json \
                    --save_steps 400 \
@@ -128,13 +128,19 @@ python -u run_sequence_labeling.py \
                    --warmup_proportion 0.002 \
                    --epoch 500 \
                    --validation_steps 200 \
-                   --max_seq_len 32 \
+                   --max_seq_len 64 \
                    --learning_rate 5e-5 \
                    --skip_steps 100 \
                    --num_iteration_per_drop_scope 1 \
                    --random_seed 1 \
-                   --checkpoints ${TASK_DATA_PATH}/classifier_concat_left_middle_right \
+                   --checkpoints ${TASK_DATA_PATH}/classifier_windowAdd_left2_right2_concat_middle \
                    --init_pretraining_params ${MODEL_PATH}/params
+
+                   --checkpoints ${TASK_DATA_PATH}/classifier_weightedAdd_all_attention_concat_middle \
+                   --init_checkpoint ${TASK_DATA_PATH}/old_checkpoints/classifier_concat_maxAttn1_middle/test_step_71900_0.377232
+
+
+
 
 
                    --init_checkpoint ${TASK_DATA_PATH}/old_checkpoints/origin/step_420001
@@ -149,10 +155,8 @@ python -u run_sequence_labeling.py \
                    --init_checkpoint ${TASK_DATA_PATH}/old_checkpoints/classifier_weightedAdd_all_attention_concat_middle/test_0.378941_step_228900
 
 
-                   --checkpoints ${TASK_DATA_PATH}/classifier_concat_maxAttn1_middle \
                    --init_pretraining_params ${MODEL_PATH}/params
 
-                   --init_checkpoint ${TASK_DATA_PATH}/old_checkpoints/classifier_concat_maxAttn1_middle/test_step_71900_0.377232
 
 
                    --checkpoints ${TASK_DATA_PATH}/origin1 \

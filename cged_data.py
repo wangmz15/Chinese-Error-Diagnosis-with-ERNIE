@@ -134,9 +134,9 @@ def get_train_dev_seg():
             open(TOCFL_DATA + '/train.tag') as train_tag_tocfl, \
             open(TOCFL_DATA + '/valid.txt') as valid_txt_tocfl, \
             open(TOCFL_DATA + '/valid.tag') as valid_tag_tocfl, \
-            open(ERNIE_DATA + '/train.tsv', 'w') as train, \
-            open(ERNIE_DATA + '/valid.tsv', 'w') as valid, \
-            open(ERNIE_DATA + '/cged.tsv', 'w') as cged:
+            open(ERNIE_DATA + '/train62.tsv', 'w') as train, \
+            open(ERNIE_DATA + '/valid62.tsv', 'w') as valid, \
+            open(ERNIE_DATA + '/cged62.tsv', 'w') as cged:
         train_txt = [i.strip().replace('\n','').replace(' ','') for i in train_txt.readlines()]
         train_tag = [i.strip().replace('\n','').split() for i in train_tag.readlines()]
         # train_txt, train_tag = cut_sent(i,j) for i,j in zip(train_tag)
@@ -260,10 +260,10 @@ def cut_sent_short(para, tag):
     else:
         return [para], [tag]
 
-LEN = 34
+LEN = 62
 def cut_short(final_txt, final_tag):
     new_txt, new_tag = [], []
-    split_list = ['，',',']
+    split_list = ['，',',','。']
     for txt, tag in zip(final_txt,final_tag):
         if len(tag) <= LEN:
             if len(tag) <= 5:
@@ -271,17 +271,29 @@ def cut_short(final_txt, final_tag):
             new_txt.append(txt)
             new_tag.append(tag)
         else:
-            pos = min(LEN*2-1, len(tag)-1)
-            start = LEN
+            # pos = min(LEN*2-1, len(tag)-1)
+            pos = min(LEN-1,len(tag)-1)
+            start = 0
             try:
-                while pos > start:
+                while pos >= start:
                     if txt[pos] in split_list:
                         if pos+1-start > 5:
                             new_txt.append(txt[start: pos+1])
                             new_tag.append(tag[start: pos+1])
+                            print(txt)
+                            print(start,pos,len(tag))
+                            print(txt[start: pos+1])
                         start = pos+1
-                        pos = min(pos+LEN, len(tag))
+                        pos = min(pos+LEN-1, len(tag)-1)
+                        # print(start, pos, len(tag))
+                        if pos == len(tag) -1:
+                            break
                     pos -= 1
+                new_txt.append(txt[start: pos+1])
+                new_tag.append(tag[start: pos+1])
+                print(txt)
+                print(start, pos, len(tag))
+                print(txt[start: pos + 1])
             except:
                 print(txt)
                 print(start,pos)
@@ -291,7 +303,7 @@ def cut_short(final_txt, final_tag):
 
 
 def get_cut_sent_test():
-    with open(ERNIE_DATA + '/test.tsv') as fr, open(ERNIE_DATA + '/test_cut_short.tsv', 'w') as fw:
+    with open(ERNIE_DATA + '/test.tsv') as fr, open(ERNIE_DATA + '/test62.tsv', 'w') as fw:
         reader = csv.reader(fr, delimiter="\t", quotechar=None)
         writer = csv.writer(fw, delimiter="\t")
         writer.writerow(['text_a', 'label'])
@@ -316,8 +328,8 @@ def get_cut_sent_test():
 
 
 if __name__ == "__main__":
-    get_test()
+    # get_test()
     # get_train_dev()
-    # get_train_dev_seg()
+    get_train_dev_seg()
     # get_test_seg()
     get_cut_sent_test()

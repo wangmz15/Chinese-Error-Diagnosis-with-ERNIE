@@ -188,11 +188,11 @@ class BaseReader(object):
             if to_append:
                 batch_records.append(record)
             else:
-                yield self._pad_batch_records(batch_records)
+                yield self._pad_batch_records(batch_records, self.max_seq_len)
                 batch_records, max_len = [record], len(record.token_ids)
         # print(cnt)
         if len(batch_records) > 0:
-            yield self._pad_batch_records(batch_records)
+            yield self._pad_batch_records(batch_records, self.max_seq_len)
 
     def get_num_examples(self, input_file):
         examples = self._read_tsv(input_file)
@@ -241,7 +241,7 @@ class ClassifyReader(BaseReader):
                 examples.append(example)
             return examples
 
-    def _pad_batch_records(self, batch_records):
+    def _pad_batch_records(self, batch_records, max_seq_len):
         batch_token_ids = [record.token_ids for record in batch_records]
         batch_text_type_ids = [record.text_type_ids for record in batch_records]
         batch_position_ids = [record.position_ids for record in batch_records]
@@ -257,13 +257,14 @@ class ClassifyReader(BaseReader):
         # padding
         padded_token_ids, next_sent_index, self_attn_bias = pad_batch_data(
             batch_token_ids,
+            max_seq_len,
             pad_idx=self.pad_id,
             return_next_sent_pos=True,
             return_attn_bias=True)
         padded_text_type_ids = pad_batch_data(
-            batch_text_type_ids, pad_idx=self.pad_id)
+            batch_text_type_ids, max_seq_len, pad_idx=self.pad_id)
         padded_position_ids = pad_batch_data(
-            batch_position_ids, pad_idx=self.pad_id)
+            batch_position_ids, max_seq_len, pad_idx=self.pad_id)
 
         return_list = [
             padded_token_ids, padded_text_type_ids, padded_position_ids,
@@ -274,7 +275,7 @@ class ClassifyReader(BaseReader):
 
 
 class SequenceLabelReader(BaseReader):
-    def _pad_batch_records(self, batch_records):
+    def _pad_batch_records(self, batch_records, max_seq_len):
         batch_token_ids = [record.token_ids for record in batch_records]
         batch_text_type_ids = [record.text_type_ids for record in batch_records]
         batch_position_ids = [record.position_ids for record in batch_records]
@@ -284,15 +285,16 @@ class SequenceLabelReader(BaseReader):
         # padding
         padded_token_ids, self_attn_bias = pad_batch_data(
             batch_token_ids,
+            max_seq_len,
             pad_idx=self.pad_id,
             return_next_sent_pos=False,
             return_attn_bias=True)
         padded_text_type_ids = pad_batch_data(
-            batch_text_type_ids, pad_idx=self.pad_id)
+            batch_text_type_ids, max_seq_len, pad_idx=self.pad_id)
         padded_position_ids = pad_batch_data(
-            batch_position_ids, pad_idx=self.pad_id)
+            batch_position_ids, max_seq_len, pad_idx=self.pad_id)
         padded_label_ids = pad_batch_data(
-            batch_label_ids, pad_idx=len(self.label_map) - 1)
+            batch_label_ids, max_seq_len, pad_idx=len(self.label_map) - 1)
         batch_seq_lens = np.array(batch_seq_lens).astype("int64").reshape(
             [-1, 1])
 
@@ -338,6 +340,7 @@ class SequenceLabelReader(BaseReader):
         if len(tokens) > max_seq_length - 2:
             tokens = tokens[0:(max_seq_length - 2)]
             labels = labels[0:(max_seq_length - 2)]
+
 
         tokens = ["[CLS]"] + tokens + ["[SEP]"]
         token_ids = tokenizer.convert_tokens_to_ids(tokens)

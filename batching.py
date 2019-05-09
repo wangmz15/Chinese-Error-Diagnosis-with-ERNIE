@@ -161,7 +161,8 @@ def prepare_batch_data(insts,
 
 
 def pad_batch_data(insts,
-                   pad_idx=0,
+                   max_seq_lengh,
+                    pad_idx=0,
                    return_pos=False,
                    return_next_sent_pos=False,
                    return_attn_bias=False,
@@ -175,14 +176,21 @@ def pad_batch_data(insts,
     # for inst in insts:
     #     print(inst)
     # print(insts)
-    max_len = max(len(inst) for inst in insts)
+    # max_len = max(len(inst) for inst in insts)
+    max_len = max_seq_lengh
     # print('!!!!!!!!!!!!!!!!', max_len)
+
     # Any token included in dict can be used to pad, since the paddings' loss
     # will be masked out by weights and make no effect on parameter gradients.
 
     inst_data = np.array(
         [inst + list([pad_idx] * (max_len - len(inst))) for inst in insts])
-    # print(inst_data)
+    # print(len(inst_data))
+    # print(' '.join([str(len(i)) for i in insts]))
+
+    # print(' '.join([str(len(i)) for i in inst_data]))
+
+
     return_list += [inst_data.astype("int64").reshape([-1, max_len, 1])]
 
     # next_sent_pos for extract first token embedding of each sentence
