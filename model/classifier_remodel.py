@@ -407,3 +407,55 @@ def classifier_lstm(enc_out):
     print(lstm)
     print(cell)
     return enc_out
+
+
+# def layer_avgPool(all_layers, enc_out):
+#     new_all_layers = []
+#     seq_len, hidden_dim = all_layers[0].shape[1], all_layers[0].shape[2]
+#     for i in all_layers:
+#         # print(i)
+#         re = layers.reshape(x=i, shape=[0, 1,seq_len * hidden_dim], inplace=True)
+#         # re = layers.unsqueeze(re, [1])
+#         new_all_layers.append(re)
+#     # print(new_all_layers[0])
+#     to_pool = layers.concat(new_all_layers, axis=2)
+#     # print(to_pool)
+#     pool = layers.pool2d(
+#         input=to_pool,
+#         pool_size=[len(new_all_layers), 1],
+#         pool_type='avg',
+#         pool_stride=1,
+#         # pool_padding=[0, 0],
+#         global_pooling=False)
+#     print(pool)
+#     pool = layers.squeeze(pool, [1,2])
+#     # print(pool)
+#     new_enc_out = layers.reshape(x=pool, shape=[0, seq_len, hidden_dim], inplace=True)
+#     print(new_enc_out)
+#     return enc_out
+
+
+def layer_avgPool(all_layers, enc_out):
+    seq_len, hidden_dim = all_layers[0].shape[1], all_layers[0].shape[2]
+    final = [layers.create_tensor(dtype='float32')]*seq_len
+    for i in range(seq_len):
+        to_concat = []
+        for j in range(len(all_layers)):
+            sents = layers.split(all_layers[j], all_layers[j].shape[1], 1)
+            for s in sents:
+                s.stop_gradient = True
+            to_concat.append(sents[i])
+        concat = layers.concat(to_concat, axis=1)
+        to_pool = layers.unsqueeze(concat, [1])
+        pool = layers.pool2d(
+            input=to_pool,
+            pool_size=[12, 1],
+            pool_type='avg',
+            pool_stride=1,
+            # pool_padding=[0, 0],
+            global_pooling=False)
+        pool = layers.squeeze(pool, [1])
+        final[i] = pool
+    new_enc_out = layers.concat(final, axis=1)
+    print(new_enc_out)
+    return new_enc_out

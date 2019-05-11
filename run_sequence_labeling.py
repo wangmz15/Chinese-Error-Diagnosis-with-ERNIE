@@ -233,9 +233,9 @@ def main(args):
                     current_example, current_epoch = reader.get_train_progress()
                     time_end = time.time()
                     used_time = time_end - time_begin
-                    print("epoch: %d, progress: %d/%d, step: %d, loss: %f, "
+                    print("%s, epoch: %d, progress: %d/%d, step: %d, loss: %f, "
                           "f1: %f, precision: %f, recall: %f, speed: %f steps/s"
-                          % (current_epoch, current_example, num_train_examples,
+                          % (args.checkpoints.split('/')[-1],current_epoch, current_example, num_train_examples,
                              steps, outputs["loss"], outputs["f1"],
                              outputs["precision"], outputs["recall"],
                              args.skip_steps / used_time))
@@ -271,7 +271,7 @@ def main(args):
                                 shuffle=False))
                         outputs = evaluate(exe, test_prog, test_pyreader, graph_vars,
                                  args.num_labels, "test")
-                        if outputs["f1"] > best_f1 and outputs["f1"] > 0.33:
+                        if outputs["f1"] > best_f1 and outputs["f1"] > 0.35:
                             best_f1 = outputs['f1']
                             save_path = os.path.join(args.checkpoints,
                                                      "test_%f_step_%d" % (outputs['f1'], steps))

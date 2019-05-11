@@ -119,7 +119,7 @@ class ErnieModel(object):
             x=[self_attn_mask] * self._n_head, axis=1)
         n_head_self_attn_mask.stop_gradient = True
 
-        self._enc_out = encoder(
+        self._enc_out, self._all_layers = encoder(
             enc_input=emb_out,
             attn_bias=n_head_self_attn_mask,
             n_layer=self._n_layer,
@@ -139,6 +139,9 @@ class ErnieModel(object):
 
     def get_sequence_output(self):
         return self._enc_out
+
+    def get_all_layers(self):
+        return self._all_layers
 
     def get_pooled_output(self, next_sent_index):
         """Get the first feature of each sequence for classification"""

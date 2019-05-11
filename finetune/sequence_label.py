@@ -59,6 +59,8 @@ def create_model(args,
         use_fp16=args.use_fp16)
 
     enc_out = ernie.get_sequence_output()
+    all_layers = ernie.get_all_layers()
+
     # enc_out_tensor = np.array(fluid.global_scope().find_var(
     #     enc_out.name).get_tensor())
 
@@ -97,13 +99,17 @@ def create_model(args,
 
 
 
-    new_enc_out, attn_scores, max_js = classifier_maxAttn1_concat_middle(enc_out,self_attn_mask) #1 yesterday
+    # new_enc_out, attn_scores, max_js = classifier_maxAttn1_concat_middle(enc_out,self_attn_mask) #1 yesterday
     # new_enc_out, attn_scores, max_js = classifier_maxAttnLeft1Right1_concat_middle(enc_out,self_attn_mask) #1 yesterday
 
     # new_enc_out, attn_scores, max_js = classifier_weightedAdd_all_attention(enc_out,self_attn_mask)
     # new_enc_out, attn_scores, max_js = classifier_weightedAdd_all_attention_concat_middle(enc_out, self_attn_mask) #1 micro new
 
     # new_enc_out = classifier_lstm(enc_out)
+
+    # new_enc_out = all_layers[0]
+    new_enc_out = all_layers[3]
+    # new_enc_out = layer_avgPool(all_layers, enc_out)
 
     logits = fluid.layers.fc(
         input=new_enc_out,

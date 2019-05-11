@@ -156,7 +156,7 @@ def multi_head_attention(queries,
                 cache["v"], shape=[0, 0, d_model]), v], axis=1)
 
     # print(q.shape, k.shape, v.shape)
-    if n_head > 1:
+    if n_head > 1 or need_combine:
         q = __split_heads(q, n_head)
         k = __split_heads(k, n_head)
         v = __split_heads(v, n_head)
@@ -165,7 +165,7 @@ def multi_head_attention(queries,
     ctx_multiheads = scaled_dot_product_attention(q, k, v, attn_bias, d_key,
                                                   dropout_rate, attention_only=attention_only)
     # print('ctx_multiheads:', ctx_multiheads)
-    if n_head > 1:
+    if n_head > 1 or need_combine:
         out = __combine_heads(ctx_multiheads)
     else:
         out = ctx_multiheads
@@ -232,6 +232,8 @@ def pre_post_process_layer(prev_out, out, process_cmd, dropout_rate=0.,
     """
     for cmd in process_cmd:
         if cmd == "a":  # add residual connection
+            # print('out', out)
+            # print('prev_out', prev_out)
             out = out + prev_out if prev_out else out
         elif cmd == "n":  # add layer normalization
             out_dtype = out.dtype
@@ -298,7 +300,10 @@ def encoder_layer(enc_input,
         n_head,
         attention_dropout,
         param_initializer=param_initializer,
-        name=name + '_multi_head_att')
+        name=name + '_multi_head_att',
+        need_combine=True)
+    # print('attn_output',attn_output)
+    # print('enc_input', enc_input)
     attn_output = post_process_layer(
         enc_input,
         attn_output,
@@ -345,6 +350,7 @@ def encoder(enc_input,
     The encoder is composed of a stack of identical layers returned by calling
     encoder_layer.
     """
+    all_layers = []
     for i in range(n_layer):
         enc_output = encoder_layer(
             enc_input,
@@ -362,8 +368,12 @@ def encoder(enc_input,
             postprocess_cmd,
             param_initializer=param_initializer,
             name=name + '_layer_' + str(i))
+        all_layers.append(enc_output)
         enc_input = enc_output
+    for i in range(n_layer):
+        all_layers[i] = pre_process_layer(
+            all_layers[i], preprocess_cmd, prepostprocess_dropout, name="post_encoder"+ str(i))
     enc_output = pre_process_layer(
         enc_output, preprocess_cmd, prepostprocess_dropout, name="post_encoder")
 
-    return enc_output
+    return enc_output, all_layers
