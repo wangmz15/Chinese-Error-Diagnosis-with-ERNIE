@@ -126,8 +126,9 @@ def optimization(loss,
             param_list[param.name] = param * 1.0
             param_list[param.name].stop_gradient = True
             # print(param.name)
+        print('stop_gradient')
         _, param_grads = optimizer.minimize(loss)
-        # print('!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+        print('!!!!!!!!!!!!!!!!!!!!!!!!!!!')
 
         if weight_decay > 0:
             for param, grad in param_grads:

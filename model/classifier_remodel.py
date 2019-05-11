@@ -409,48 +409,19 @@ def classifier_lstm(enc_out):
     return enc_out
 
 
-# def layer_avgPool(all_layers, enc_out):
-#     new_all_layers = []
-#     seq_len, hidden_dim = all_layers[0].shape[1], all_layers[0].shape[2]
-#     for i in all_layers:
-#         # print(i)
-#         re = layers.reshape(x=i, shape=[0, 1,seq_len * hidden_dim], inplace=True)
-#         # re = layers.unsqueeze(re, [1])
-#         new_all_layers.append(re)
-#     # print(new_all_layers[0])
-#     to_pool = layers.concat(new_all_layers, axis=2)
-#     # print(to_pool)
-#     pool = layers.pool2d(
-#         input=to_pool,
-#         pool_size=[len(new_all_layers), 1],
-#         pool_type='avg',
-#         pool_stride=1,
-#         # pool_padding=[0, 0],
-#         global_pooling=False)
-#     print(pool)
-#     pool = layers.squeeze(pool, [1,2])
-#     # print(pool)
-#     new_enc_out = layers.reshape(x=pool, shape=[0, seq_len, hidden_dim], inplace=True)
-#     print(new_enc_out)
-#     return enc_out
-
-
 def layer_avgPool(all_layers, enc_out):
     seq_len, hidden_dim = all_layers[0].shape[1], all_layers[0].shape[2]
-    leng = len(all_layers)
-    final = [layers.create_tensor(dtype='float32')]*seq_len
-    for i in range(0, seq_len):
-        l = [layers.create_tensor(dtype='float32')]*leng
-        for j in range(0, leng):
-            layer = all_layers[j]
-            lst = fluid.layers.split(layer, layer.shape[1], 1)
-            for pos in range(len(lst)):
-                if pos != i:
-                    lst[pos].stop_gradient = True
-            l[j] = lst[i]
-        # l = [layers.split(layer, layer.shape[1], 1)[i] for layer in all_layers]
-        concat = layers.concat(l, axis=1)
-        to_pool = layers.unsqueeze(concat, [1])
+    to_concat = []
+
+    for i in range(seq_len):
+        to_concat.append([])
+    for i, layer in enumerate(all_layers):
+        words = layers.split(layer, layer.shape[1], 1)
+        for j, word in enumerate(words):
+            to_concat[j].append(word)
+    final = []
+    for word_lst in to_concat:
+        to_pool = layers.unsqueeze(layers.concat(word_lst, axis=1), [1])
         pool = layers.pool2d(
             input=to_pool,
             pool_size=[12, 1],
@@ -459,32 +430,25 @@ def layer_avgPool(all_layers, enc_out):
             # pool_padding=[0, 0],
             global_pooling=False)
         pool = layers.squeeze(pool, [1])
-        final[i] = pool
+        final.append(pool)
     new_enc_out = layers.concat(final, axis=1)
     print(new_enc_out)
     return new_enc_out
 
 
-
-
 def layer_maxPool(all_layers, enc_out):
     seq_len, hidden_dim = all_layers[0].shape[1], all_layers[0].shape[2]
-    leng = len(all_layers)
-    final = [layers.create_tensor(dtype='float32')]*seq_len
-    for i in range(0, seq_len):
-        l = [layers.create_tensor(dtype='float32')]*leng
-        for j in range(0, leng):
-            layer = all_layers[j]
-            lst = fluid.layers.split(layer, layer.shape[1], 1)
-            for pos in range(len(lst)):
-                if pos != i:
-                    lst[pos].stop_gradient = True
-                else:
-                    lst[pos].stop_gradient = False
-            l[j] = lst[i]
-        # l = [layers.split(layer, layer.shape[1], 1)[i] for layer in all_layers]
-        concat = layers.concat(l, axis=1)
-        to_pool = layers.unsqueeze(concat, [1])
+    to_concat = []
+
+    for i in range(seq_len):
+        to_concat.append([])
+    for i, layer in enumerate(all_layers):
+        words = layers.split(layer, layer.shape[1], 1)
+        for j, word in enumerate(words):
+            to_concat[j].append(word)
+    final = []
+    for word_lst in to_concat:
+        to_pool = layers.unsqueeze(layers.concat(word_lst, axis=1), [1])
         pool = layers.pool2d(
             input=to_pool,
             pool_size=[12, 1],
@@ -493,7 +457,7 @@ def layer_maxPool(all_layers, enc_out):
             # pool_padding=[0, 0],
             global_pooling=False)
         pool = layers.squeeze(pool, [1])
-        final[i] = pool
+        final.append(pool)
     new_enc_out = layers.concat(final, axis=1)
     print(new_enc_out)
     return new_enc_out

@@ -109,7 +109,8 @@ def create_model(args,
 
     # new_enc_out = all_layers[0]
     # new_enc_out = all_layers[3]
-    new_enc_out = layer_avgPool(all_layers, enc_out)
+    new_enc_out = all_layers[6]
+    # new_enc_out = layer_avgPool(all_layers, enc_out)
     # new_enc_out = layer_maxPool(all_layers, enc_out)
 
     logits = fluid.layers.fc(
