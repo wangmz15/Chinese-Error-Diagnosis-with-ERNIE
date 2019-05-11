@@ -437,20 +437,58 @@ def classifier_lstm(enc_out):
 
 def layer_avgPool(all_layers, enc_out):
     seq_len, hidden_dim = all_layers[0].shape[1], all_layers[0].shape[2]
+    leng = len(all_layers)
     final = [layers.create_tensor(dtype='float32')]*seq_len
-    for i in range(seq_len):
-        to_concat = []
-        for j in range(len(all_layers)):
-            sents = layers.split(all_layers[j], all_layers[j].shape[1], 1)
-            for s in sents:
-                s.stop_gradient = True
-            to_concat.append(sents[i])
-        concat = layers.concat(to_concat, axis=1)
+    for i in range(0, seq_len):
+        l = [layers.create_tensor(dtype='float32')]*leng
+        for j in range(0, leng):
+            layer = all_layers[j]
+            lst = fluid.layers.split(layer, layer.shape[1], 1)
+            for pos in range(len(lst)):
+                if pos != i:
+                    lst[pos].stop_gradient = True
+            l[j] = lst[i]
+        # l = [layers.split(layer, layer.shape[1], 1)[i] for layer in all_layers]
+        concat = layers.concat(l, axis=1)
         to_pool = layers.unsqueeze(concat, [1])
         pool = layers.pool2d(
             input=to_pool,
             pool_size=[12, 1],
             pool_type='avg',
+            pool_stride=1,
+            # pool_padding=[0, 0],
+            global_pooling=False)
+        pool = layers.squeeze(pool, [1])
+        final[i] = pool
+    new_enc_out = layers.concat(final, axis=1)
+    print(new_enc_out)
+    return new_enc_out
+
+
+
+
+def layer_maxPool(all_layers, enc_out):
+    seq_len, hidden_dim = all_layers[0].shape[1], all_layers[0].shape[2]
+    leng = len(all_layers)
+    final = [layers.create_tensor(dtype='float32')]*seq_len
+    for i in range(0, seq_len):
+        l = [layers.create_tensor(dtype='float32')]*leng
+        for j in range(0, leng):
+            layer = all_layers[j]
+            lst = fluid.layers.split(layer, layer.shape[1], 1)
+            for pos in range(len(lst)):
+                if pos != i:
+                    lst[pos].stop_gradient = True
+                else:
+                    lst[pos].stop_gradient = False
+            l[j] = lst[i]
+        # l = [layers.split(layer, layer.shape[1], 1)[i] for layer in all_layers]
+        concat = layers.concat(l, axis=1)
+        to_pool = layers.unsqueeze(concat, [1])
+        pool = layers.pool2d(
+            input=to_pool,
+            pool_size=[12, 1],
+            pool_type='max',
             pool_stride=1,
             # pool_padding=[0, 0],
             global_pooling=False)
