@@ -93,15 +93,17 @@ def create_model(args,
     # new_enc_out = classifier_avgPool_left_middle_right_31_concat_middle(enc_out)
 
     # new_enc_out = classifier_windowAdd_left_right_concat_middle(enc_out) #1 but version changed 0
-    new_enc_out = classifier_windowAdd_left2_right2_concat_middle(enc_out) #1
+    # new_enc_out = classifier_windowAdd_left2_right2_concat_middle(enc_out) #1
 
 
 
-    # new_enc_out, attn_scores, max_js = classifier_maxAttn1_concat_middle(enc_out,self_attn_mask) #1 yesterday
+    new_enc_out, attn_scores, max_js = classifier_maxAttn1_concat_middle(enc_out,self_attn_mask) #1 yesterday
     # new_enc_out, attn_scores, max_js = classifier_maxAttnLeft1Right1_concat_middle(enc_out,self_attn_mask) #1 yesterday
 
     # new_enc_out, attn_scores, max_js = classifier_weightedAdd_all_attention(enc_out,self_attn_mask)
     # new_enc_out, attn_scores, max_js = classifier_weightedAdd_all_attention_concat_middle(enc_out, self_attn_mask) #1 micro new
+
+    # new_enc_out = classifier_lstm(enc_out)
 
     logits = fluid.layers.fc(
         input=new_enc_out,

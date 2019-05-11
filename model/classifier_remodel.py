@@ -393,3 +393,17 @@ def classifier_weightedAdd_all_attention_concat_middle(enc_out,self_attn_mask):
     max_js = None
     print(new_enc_out)
     return new_enc_out, attn_scores, max_js
+
+def classifier_lstm(enc_out):
+    # re = layers.reshape(
+    #     x=enc_out,
+    #     shape=[-1, enc_out.shape[1]*enc_out.shape[2]],
+    #     inplace=True)
+
+    forward_proj = fluid.layers.fc(input=enc_out, size=enc_out.shape[2] * 4,
+                                   act=None, bias_attr=None)
+    print('forward_proj:', forward_proj)
+    lstm, cell = fluid.layers.dynamic_lstm(input=forward_proj, size=enc_out.shape[2] * 4, use_peepholes=False)
+    print(lstm)
+    print(cell)
+    return enc_out

@@ -2,13 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c738bebb-2c57-4350-a62f-2b5eb09c9844" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/batching.py" beforeDir="false" afterPath="$PROJECT_DIR$/batching.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cged_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/cged_data.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/finetune/sequence_label.py" beforeDir="false" afterPath="$PROJECT_DIR$/finetune/sequence_label.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/model/classifier_remodel.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/classifier_remodel.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/transformer_encoder.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/transformer_encoder.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/optimization.py" beforeDir="false" afterPath="$PROJECT_DIR$/optimization.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/reader/task_reader.py" beforeDir="false" afterPath="$PROJECT_DIR$/reader/task_reader.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/script/run_msra_ner.sh" beforeDir="false" afterPath="$PROJECT_DIR$/script/run_msra_ner.sh" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -32,8 +27,8 @@
       <file leaf-file-name="run_sequence_labeling.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/run_sequence_labeling.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="286">
-              <caret line="56" column="32" selection-start-line="56" selection-start-column="23" selection-end-line="56" selection-end-column="32" />
+            <state relative-caret-position="76">
+              <caret line="42" lean-forward="true" selection-start-line="42" selection-end-line="42" />
               <folding>
                 <element signature="e#655#693#0" expanded="true" />
               </folding>
@@ -41,20 +36,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="pretrain_args.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pretrain_args.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="196">
-              <caret line="31" column="62" lean-forward="true" selection-start-line="31" selection-start-column="62" selection-end-line="31" selection-end-column="62" />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="sequence_label.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/finetune/sequence_label.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="235">
-              <caret line="95" column="55" selection-start-line="95" selection-start-column="18" selection-end-line="95" selection-end-column="65" />
+            <state relative-caret-position="495">
+              <caret line="60" column="27" selection-start-line="60" selection-start-column="27" selection-end-line="60" selection-end-column="27" />
               <folding>
                 <element signature="e#613#651#0" expanded="true" />
               </folding>
@@ -62,11 +48,20 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="ernie.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/model/ernie.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="311">
+              <caret line="121" column="29" selection-start-line="121" selection-start-column="29" selection-end-line="121" selection-end-column="29" />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="classifier_remodel.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/model/classifier_remodel.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="211">
-              <caret line="194" column="51" selection-start-line="194" selection-start-column="4" selection-end-line="194" selection-end-column="51" />
+            <state relative-caret-position="-1388">
+              <caret line="253" column="4" selection-start-line="253" selection-start-column="4" selection-end-line="253" selection-end-column="4" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -74,10 +69,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="run_msra_ner.sh" pinned="false" current-in-tab="true">
+      <file leaf-file-name="run_msra_ner.sh" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/script/run_msra_ner.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="331">
+            <state relative-caret-position="489">
               <caret line="123" column="50" lean-forward="true" selection-start-line="123" selection-start-column="50" selection-end-line="123" selection-end-column="50" />
             </state>
           </provider>
@@ -95,11 +90,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="transformer_encoder.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="transformer_encoder.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/model/transformer_encoder.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="427">
-              <caret line="139" column="18" lean-forward="true" selection-start-line="139" selection-start-column="18" selection-end-line="139" selection-end-column="18" />
+            <state relative-caret-position="744">
+              <caret line="364" column="30" lean-forward="true" selection-start-line="364" selection-start-column="30" selection-end-line="364" selection-end-column="30" />
             </state>
           </provider>
         </entry>
@@ -162,10 +157,10 @@
       <find>_pad_batch_records</find>
       <find>pad_batch_data</find>
       <find>!!!!!!</find>
-      <find>print</find>
-      <find>in_tokens</find>
       <find>one_hot</find>
       <find>se</find>
+      <find>in_tokens</find>
+      <find>print</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -187,8 +182,8 @@
         <option value="$PROJECT_DIR$/batching.py" />
         <option value="$PROJECT_DIR$/cged_data.py" />
         <option value="$PROJECT_DIR$/optimization.py" />
-        <option value="$PROJECT_DIR$/finetune/sequence_label.py" />
         <option value="$PROJECT_DIR$/model/classifier_remodel.py" />
+        <option value="$PROJECT_DIR$/finetune/sequence_label.py" />
         <option value="$PROJECT_DIR$/script/run_msra_ner.sh" />
       </list>
     </option>
@@ -202,7 +197,7 @@
   <component name="NodePackageJsonFileManager">
     <packageJsonPaths />
   </component>
-  <component name="ProjectFrameBounds">
+  <component name="ProjectFrameBounds" extendedState="6" fullScreen="true">
     <option name="width" value="1280" />
     <option name="height" value="800" />
   </component>
@@ -295,19 +290,19 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1280" height="800" extended-state="6" />
+    <frame x="0" y="0" width="1920" height="1080" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.5016155" side_tool="true" weight="0.21367522" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="File Transfer" order="7" sideWeight="0.4983845" weight="0.21323529" />
+      <window_info anchor="bottom" id="File Transfer" order="7" sideWeight="0.4983845" weight="0.21283096" />
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Python Console" order="7" />
       <window_info anchor="bottom" id="Terminal" order="7" />
       <window_info anchor="right" id="Remote Host" order="3" />
-      <window_info content_ui="combo" id="Project" order="0" weight="0.2180937" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.21778488" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="3" />
       <window_info anchor="bottom" id="Find" order="1" />
@@ -555,7 +550,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/model/debug.py" />
-    <entry file="file://$PROJECT_DIR$/model/ernie.py" />
     <entry file="file://$PROJECT_DIR$/debug.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="345">
@@ -619,13 +613,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/model/transformer_encoder.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="427">
-          <caret line="139" column="18" lean-forward="true" selection-start-line="139" selection-start-column="18" selection-end-line="139" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/optimization.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="484">
@@ -635,25 +622,32 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pretrain_args.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="196">
+        <state relative-caret-position="147">
           <caret line="31" column="62" lean-forward="true" selection-start-line="31" selection-start-column="62" selection-end-line="31" selection-end-column="62" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/run_sequence_labeling.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="286">
-          <caret line="56" column="32" selection-start-line="56" selection-start-column="23" selection-end-line="56" selection-end-column="32" />
+        <state relative-caret-position="76">
+          <caret line="42" lean-forward="true" selection-start-line="42" selection-end-line="42" />
           <folding>
             <element signature="e#655#693#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/script/run_msra_ner.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="489">
+          <caret line="123" column="50" lean-forward="true" selection-start-line="123" selection-start-column="50" selection-end-line="123" selection-end-column="50" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/model/classifier_remodel.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="211">
-          <caret line="194" column="51" selection-start-line="194" selection-start-column="4" selection-end-line="194" selection-end-column="51" />
+        <state relative-caret-position="-1388">
+          <caret line="253" column="4" selection-start-line="253" selection-start-column="4" selection-end-line="253" selection-end-column="4" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
@@ -662,18 +656,25 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/finetune/sequence_label.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="235">
-          <caret line="95" column="55" selection-start-line="95" selection-start-column="18" selection-end-line="95" selection-end-column="65" />
+        <state relative-caret-position="495">
+          <caret line="60" column="27" selection-start-line="60" selection-start-column="27" selection-end-line="60" selection-end-column="27" />
           <folding>
             <element signature="e#613#651#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/script/run_msra_ner.sh">
+    <entry file="file://$PROJECT_DIR$/model/ernie.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="331">
-          <caret line="123" column="50" lean-forward="true" selection-start-line="123" selection-start-column="50" selection-end-line="123" selection-end-column="50" />
+        <state relative-caret-position="311">
+          <caret line="121" column="29" selection-start-line="121" selection-start-column="29" selection-end-line="121" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/model/transformer_encoder.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="744">
+          <caret line="364" column="30" lean-forward="true" selection-start-line="364" selection-start-column="30" selection-end-line="364" selection-end-column="30" />
         </state>
       </provider>
     </entry>
