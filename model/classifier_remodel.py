@@ -39,7 +39,7 @@ def classifier_maxPool_left_middle_right_33(enc_out):
     new_enc_out = layers.concat(pool_words,axis=1)
     return new_enc_out
 
-def classifier_avgPool_left_middle_right_33(enc_out):
+def classifier_avgPool_left_middle_right_33_concat_middle(enc_out):
     words = layers.split(enc_out,enc_out.shape[1],1)
     pool_words = [layers.create_tensor(dtype='float32')]*enc_out.shape[1]
     l = enc_out.shape[1]
@@ -53,6 +53,7 @@ def classifier_avgPool_left_middle_right_33(enc_out):
                   # pool_padding=1,
                   global_pooling=False)
         pool_words[i] = layers.squeeze(pool_words[i], [1])
+        pool_words[i] = layers.concat([words[i], pool_words[i]], axis=2)
 
     new_enc_out = layers.concat(pool_words,axis=1)
     return new_enc_out
@@ -252,10 +253,6 @@ def classifier_avgAdd_attention1_middle(enc_out,self_attn_mask):
 
 
 def classifier_maxAttn1_concat_middle(enc_out,self_attn_mask):
-    # n_head_self_attn_mask = fluid.layers.stack(
-    #     x=[self_attn_mask] * 1, axis=1)
-    # n_head_self_attn_mask.stop_gradient = True
-    # self_attn_mask.stop_gradient = True
     attn_scores = multi_head_attention(
         pre_process_layer(enc_out,'da',0.0,name='classifier_pre_att'),
         None,None,attn_bias=self_attn_mask,
@@ -302,10 +299,56 @@ def classifier_maxAttn1_concat_middle(enc_out,self_attn_mask):
     return new_enc_out, attn_scores, max_js
 
 
+
+
+def classifier_maxAttn1_concat_middle(enc_out,self_attn_mask):
+    attn_scores = multi_head_attention(
+        pre_process_layer(enc_out,'da',0.0,name='classifier_pre_att'),
+        None,None,attn_bias=self_attn_mask,
+        d_key=768,d_value=768,d_model=768,n_head=1,
+        dropout_rate=0.0,param_initializer=None,name= 'classifier_att_score',attention_only=True)
+
+    a_sent_scores = layers.split(attn_scores, attn_scores.shape[1], 1)
+    a_sent_scores_split = []
+    duoyu = []
+    for i, s in enumerate(a_sent_scores):
+        words = layers.split(s, s.shape[2], 2)
+        # words[i].stop_gradient = True
+        a_sent_scores_split.append(words)
+    new_words = [layers.create_tensor(dtype='float32')] * enc_out.shape[1]
+    indices_list = []
+    word_scores_removej_list = []
+    enc_out_split = layers.split(enc_out, enc_out.shape[1], 1)
+
+    for j, [word_scores, word_vec] in enumerate(zip(a_sent_scores_split, enc_out_split)):
+        word_scores_removej = layers.concat([l for i,l in enumerate (word_scores) if i != j], axis=2)
+        word_scores = layers.concat(word_scores, axis=2)
+        # word_scores_removej_list.append(word_scores_removej)
+
+        max_j = layers.argmax(word_scores, axis=2)
+        indices = layers.one_hot(max_j, word_scores.shape[-1])
+        indices = layers.unsqueeze(layers.cast(indices, dtype='float32'),[1])
+
+
+        max_j2 = layers.argmax(word_scores_removej, axis=2)
+        indices2 = layers.one_hot(max_j2, word_scores_removej.shape[-1])
+        indices_list.append(indices2)
+        indices2 = layers.unsqueeze(layers.cast(indices2, dtype='float32'),[1])
+
+        enc_out_removej = layers.concat([l for p,l in enumerate(enc_out_split) if p != j], axis=1)
+        max_enc = layers.matmul(indices, enc_out)
+        # print(layers.matmul(indices2, enc_out))
+
+        new_words[j] = layers.concat([max_enc, layers.matmul(indices2, enc_out_removej)], axis=2)
+    # attn_scores = layers.concat(word_scores_removej_list, axis=1)
+    max_js = layers.concat(indices_list, axis=1)
+    new_enc_out = layers.concat(new_words, axis=1)
+    print(new_enc_out)
+    return new_enc_out, a_sent_scores_split, max_js
+
+
+
 def classifier_maxAttnLeft1Right1_concat_middle(enc_out,self_attn_mask):
-    # n_head_self_attn_mask = fluid.layers.stack(
-    #     x=[self_attn_mask] * 1, axis=1)
-    # n_head_self_attn_mask.stop_gradient = True
     attn_scores = multi_head_attention(
         pre_process_layer(enc_out,'da',0.0,name='classifier_pre_att'),
         None,None,attn_bias=self_attn_mask,
@@ -352,9 +395,6 @@ def classifier_maxAttnLeft1Right1_concat_middle(enc_out,self_attn_mask):
 
 
 def classifier_weightedAdd_all_attention(enc_out,self_attn_mask):
-    # n_head_self_attn_mask = fluid.layers.stack(
-    #     x=[self_attn_mask] * 1, axis=1)
-    # n_head_self_attn_mask.stop_gradient = True
     attn_scores = multi_head_attention(
         pre_process_layer(enc_out,'da',0.0,name='classifier_pre_att'),
         None,None,attn_bias=self_attn_mask,
@@ -393,20 +433,55 @@ def classifier_weightedAdd_all_attention_concat_middle(enc_out,self_attn_mask):
     max_js = None
     print(new_enc_out)
     return new_enc_out, attn_scores, max_js
+#
+# def classifier_lstm(enc_out):
+#     seq_len, hidden_dim = enc_out.shape[1], enc_out.shape[2]
+#     lst = layers.split(enc_out, enc_out.shape[0], 0)
+#     to_concat = []
+#     lst1 = [0]+[1]*(seq_len)
+#     lod = [lst1]
+#     lod = list(np.cumsum(lod))
+#     for out in lst:
+#         out = layers.squeeze(out, [0])
+#         out = fluid.layers.lod_reset(x=out, target_lod=lod)
+#         # out.set_lod(lod)
+#         forward_proj = fluid.layers.fc(input=out, size=hidden_dim * 4,
+#                                        act=None, bias_attr=None)
+#         lstm, cell = fluid.layers.dynamic_lstm(input=forward_proj, size=hidden_dim * 4, use_peepholes=False)
+#         # lstm = layers.sequence_reshape(lstm, new_dim=seq_len)
+#         # lstm = fluid.layers.lod_reset(x=lstm, target_lod=lod)
+#         # lstm = layers.reshape(lstm, [1, seq_len, hidden_dim])
+#         # lstm = layers.unsqueeze(lstm,[0])
+#         lstm = fluid.layers.stack(
+#             x=[lstm] * 1, axis=0)
+#         to_concat.append(lstm)
+#     new_enc_out = layers.concat(to_concat, axis=0)
+#     new_enc_out = layers.reshape(new_enc_out, [-1, seq_len, hidden_dim])
+#     print(new_enc_out)
+#     return new_enc_out
+
+
 
 def classifier_lstm(enc_out):
-    # re = layers.reshape(
-    #     x=enc_out,
-    #     shape=[-1, enc_out.shape[1]*enc_out.shape[2]],
-    #     inplace=True)
-
-    forward_proj = fluid.layers.fc(input=enc_out, size=enc_out.shape[2] * 4,
+    batch_size, seq_len, hidden_dim = enc_out.shape[0], enc_out.shape[1], enc_out.shape[2]
+    lod = [[0]+[seq_len]*(batch_size)]
+    print(lod)
+    lod = list(np.cumsum(lod))
+    print(lod)
+    flatten = layers.flatten(enc_out, 2)
+    fluid.layers.lod_reset(x=flatten, target_lod=lod)
+    print(flatten)
+    forward_proj = fluid.layers.fc(input=flatten, size=hidden_dim * 4,
                                    act=None, bias_attr=None)
-    print('forward_proj:', forward_proj)
-    lstm, cell = fluid.layers.dynamic_lstm(input=forward_proj, size=enc_out.shape[2] * 4, use_peepholes=False)
+    print(forward_proj)
+    lstm, cell = fluid.layers.dynamic_lstm(input=forward_proj, size=hidden_dim * 4, use_peepholes=False)
     print(lstm)
-    print(cell)
+
+    new_enc_out = layers.reshape(lstm, [-1, seq_len, hidden_dim])
+    print(new_enc_out)
+
     return enc_out
+
 
 
 def layer_avgPool(all_layers, enc_out):
@@ -459,5 +534,61 @@ def layer_maxPool(all_layers, enc_out):
         pool = layers.squeeze(pool, [1])
         final.append(pool)
     new_enc_out = layers.concat(final, axis=1)
+    print(new_enc_out)
+    return new_enc_out
+
+
+def layer_maxPool_concat_last(all_layers, enc_out):
+    seq_len, hidden_dim = all_layers[0].shape[1], all_layers[0].shape[2]
+    to_concat = []
+
+    for i in range(seq_len):
+        to_concat.append([])
+    for i, layer in enumerate(all_layers):
+        words = layers.split(layer, layer.shape[1], 1)
+        for j, word in enumerate(words):
+            to_concat[j].append(word)
+    final = []
+    for word_lst in to_concat:
+        to_pool = layers.unsqueeze(layers.concat(word_lst, axis=1), [1])
+        pool = layers.pool2d(
+            input=to_pool,
+            pool_size=[12, 1],
+            pool_type='max',
+            pool_stride=1,
+            # pool_padding=[0, 0],
+            global_pooling=False)
+        pool = layers.squeeze(pool, [1])
+        final.append(pool)
+    new_enc_out = layers.concat(final, axis=1)
+    new_enc_out = layers.concat([enc_out, new_enc_out], axis=2)
+    # print(new_enc_out)
+    return new_enc_out
+
+
+def layer_avgPool_concat_last(all_layers, enc_out):
+    seq_len, hidden_dim = all_layers[0].shape[1], all_layers[0].shape[2]
+    to_concat = []
+
+    for i in range(seq_len):
+        to_concat.append([])
+    for i, layer in enumerate(all_layers):
+        words = layers.split(layer, layer.shape[1], 1)
+        for j, word in enumerate(words):
+            to_concat[j].append(word)
+    final = []
+    for word_lst in to_concat:
+        to_pool = layers.unsqueeze(layers.concat(word_lst, axis=1), [1])
+        pool = layers.pool2d(
+            input=to_pool,
+            pool_size=[12, 1],
+            pool_type='avg',
+            pool_stride=1,
+            # pool_padding=[0, 0],
+            global_pooling=False)
+        pool = layers.squeeze(pool, [1])
+        final.append(pool)
+    new_enc_out = layers.concat(final, axis=1)
+    new_enc_out = layers.concat([enc_out, new_enc_out], axis=2)
     print(new_enc_out)
     return new_enc_out

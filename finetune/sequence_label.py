@@ -84,9 +84,9 @@ def create_model(args,
 
     # new_enc_out = enc_out
     # new_enc_out = classifier_concat_left_middle_right(enc_out)
-    # new_enc_out = classifier_concat_left2_middle_right2(enc_out)
+    new_enc_out = classifier_concat_left2_middle_right2(enc_out)
     # new_enc_out = classifier_maxPool_left_middle_right_33(enc_out)
-    # new_enc_out = classifier_maxPool_left_middle_right_33(enc_out)
+    # new_enc_out = classifier_avgPool_left_middle_right_33_concat_middle(enc_out)
     # new_enc_out = classifier_maxPool_left_right_21_concat_middle(enc_out)
     # new_enc_out = classifier_avgPool_left_right_21_concat_middle(enc_out)
     # new_enc_out = classifier_maxPool_left_middle_right_31(enc_out)
@@ -109,9 +109,17 @@ def create_model(args,
 
     # new_enc_out = all_layers[0]
     # new_enc_out = all_layers[3]
-    new_enc_out = all_layers[6]
+    # new_enc_out = all_layers[6]
+    # new_enc_out = all_layers[9]
     # new_enc_out = layer_avgPool(all_layers, enc_out)
     # new_enc_out = layer_maxPool(all_layers, enc_out)
+    # new_enc_out = layer_maxPool_concat_last(all_layers, enc_out)
+    # new_enc_out = layer_avgPool_concat_last(all_layers, enc_out)
+
+    # enc_out = layer_maxPool_concat_last(all_layers, enc_out)
+    # print('enc_out', enc_out)
+    # new_enc_out = classifier_avgPool_left_right_21_concat_middle(enc_out)
+    # print('new_enc_out',new_enc_out)
 
     logits = fluid.layers.fc(
         input=new_enc_out,
@@ -122,19 +130,24 @@ def create_model(args,
             initializer=fluid.initializer.TruncatedNormal(scale=0.02)),
         bias_attr=fluid.ParamAttr(
             name="cls_seq_label_out_b", initializer=fluid.initializer.Constant(0.)))
-    print('logits shape:',logits.shape)
+
 
     print('labels shape:', labels.shape)
     ret_labels = fluid.layers.reshape(x=labels, shape=[-1,1])
     ret_infers = fluid.layers.reshape(x=fluid.layers.argmax(logits, axis=2), shape=[-1,1])
-    print('ret_labels shape:',ret_labels.shape)
-    print('ret_infers shape:',ret_infers.shape)
+    # print('ret_labels shape:',ret_labels.shape)
+    # print('ret_infers shape:',ret_infers.shape)
     labels = fluid.layers.flatten(labels, axis=2)
     print('labels shape:',labels.shape)
 
+
+    print('logits shape:', logits.shape)
+    logits = fluid.layers.flatten(logits, axis=2)
+    print('flatten and reshape\n', logits)
     ce_loss, probs = fluid.layers.softmax_with_cross_entropy(
-        logits=fluid.layers.flatten(logits, axis=2),
+        logits=logits,
         label=labels, return_softmax=True)
+    print(ce_loss)
     loss = fluid.layers.mean(x=ce_loss)
 
     if args.use_fp16 and args.loss_scaling > 1.0:
