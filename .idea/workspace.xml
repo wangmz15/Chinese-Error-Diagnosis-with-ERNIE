@@ -2,8 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c738bebb-2c57-4350-a62f-2b5eb09c9844" name="Default" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cged17.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cged_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/cged_data.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/finetune/sequence_label.py" beforeDir="false" afterPath="$PROJECT_DIR$/finetune/sequence_label.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/classifier_remodel.py" beforeDir="false" afterPath="$PROJECT_DIR$/model/classifier_remodel.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/script/run_msra_ner.sh" beforeDir="false" afterPath="$PROJECT_DIR$/script/run_msra_ner.sh" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -27,8 +30,8 @@
       <file leaf-file-name="run_sequence_labeling.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/run_sequence_labeling.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-260">
-              <caret line="255" column="52" selection-start-line="255" selection-start-column="52" selection-end-line="255" selection-end-column="52" />
+            <state relative-caret-position="-455">
+              <caret line="94" column="25" lean-forward="true" selection-start-line="94" selection-start-column="25" selection-end-line="94" selection-end-column="25" />
               <folding>
                 <element signature="e#655#693#0" expanded="true" />
               </folding>
@@ -39,8 +42,8 @@
       <file leaf-file-name="sequence_label.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/finetune/sequence_label.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="177">
-              <caret line="86" column="42" selection-start-line="86" selection-start-column="42" selection-end-line="86" selection-end-column="42" />
+            <state relative-caret-position="-476">
+              <caret line="70" column="48" lean-forward="true" selection-start-line="70" selection-start-column="48" selection-end-line="70" selection-end-column="48" />
               <folding>
                 <element signature="e#613#651#0" expanded="true" />
               </folding>
@@ -51,8 +54,8 @@
       <file leaf-file-name="ernie.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/model/ernie.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="580">
-              <caret line="121" column="44" lean-forward="true" selection-start-line="121" selection-start-column="44" selection-end-line="121" selection-end-column="44" />
+            <state relative-caret-position="783">
+              <caret line="143" column="31" selection-start-line="143" selection-start-column="31" selection-end-line="143" selection-end-column="31" />
               <folding>
                 <element signature="e#632#670#0" expanded="true" />
               </folding>
@@ -63,8 +66,8 @@
       <file leaf-file-name="classifier_remodel.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/model/classifier_remodel.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="135">
-              <caret line="14" column="4" selection-start-line="14" selection-start-column="4" selection-end-line="14" selection-end-column="4" />
+            <state relative-caret-position="209">
+              <caret line="471" column="53" lean-forward="true" selection-start-line="471" selection-start-column="38" selection-end-line="471" selection-end-column="53" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -75,8 +78,8 @@
       <file leaf-file-name="transformer_encoder.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/model/transformer_encoder.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="531">
-              <caret line="373" column="23" lean-forward="true" selection-start-line="373" selection-start-column="23" selection-end-line="373" selection-end-column="23" />
+            <state relative-caret-position="548">
+              <caret line="354" column="18" selection-start-line="354" selection-start-column="18" selection-end-line="354" selection-end-column="18" />
             </state>
           </provider>
         </entry>
@@ -84,29 +87,29 @@
       <file leaf-file-name="run_msra_ner.sh" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/script/run_msra_ner.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="529">
-              <caret line="137" lean-forward="true" selection-start-line="137" selection-end-line="137" />
+            <state relative-caret-position="176">
+              <caret line="112" column="36" lean-forward="true" selection-start-line="112" selection-start-column="36" selection-end-line="112" selection-end-column="36" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="cged_data.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/cged_data.py">
+      <file leaf-file-name="give_cged_tag.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/give_cged_tag.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="179">
-              <caret line="270" column="31" lean-forward="true" selection-start-line="270" selection-start-column="31" selection-end-line="270" selection-end-column="31" />
+            <state relative-caret-position="142">
+              <caret line="21" column="39" lean-forward="true" selection-start-line="21" selection-start-column="39" selection-end-line="21" selection-end-column="39" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="cged17.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/cged17.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="203">
+              <caret line="119" column="13" lean-forward="true" selection-start-line="119" selection-start-column="13" selection-end-line="119" selection-end-column="13" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="batching.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/batching.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="306">
-              <caret line="181" lean-forward="true" selection-start-line="181" selection-end-line="181" />
             </state>
           </provider>
         </entry>
@@ -122,18 +125,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>_convert_example_to_record</find>
-      <find>max_seq_len</find>
-      <find>_pad_batch_records</find>
-      <find>pad_batch_data</find>
-      <find>!!!!!!</find>
-      <find>one_hot</find>
-      <find>se</find>
-      <find>in_tokens</find>
-      <find>avg</find>
-      <find>pool</find>
-      <find>_enc_out</find>
-      <find>reshape</find>
       <find>print('at</find>
       <find>pool2d</find>
       <find>stop_gradient</find>
@@ -142,16 +133,28 @@
       <find>loss</find>
       <find>print</find>
       <find>maxAttn</find>
-      <find>self._enc_out</find>
       <find>lstm</find>
       <find>unsqueeze</find>
-      <find>stop</find>
       <find>maxAt</find>
       <find>stop_gra</find>
       <find>classifier_avgPool_left_middle_right_31_concat_middle</find>
       <find>classifier_avgPool_left_middle_right_</find>
+      <find>ParamAttr</find>
+      <find>float</find>
+      <find>word</find>
+      <find>int64</find>
+      <find>emission</find>
+      <find>probs</find>
+      <find>lod_reset</find>
+      <find>target_lod</find>
       <find>end</find>
+      <find>self._enc_out</find>
       <find>classifier_maxPool_left_right_21_concat_middle</find>
+      <find>get_seg</find>
+      <find>tocfl</find>
+      <find>stop</find>
+      <find>tocfl_src</find>
+      <find>writerow</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -168,13 +171,14 @@
         <option value="$PROJECT_DIR$/utils/init.py" />
         <option value="$PROJECT_DIR$/reader/task_reader.py" />
         <option value="$PROJECT_DIR$/batching.py" />
-        <option value="$PROJECT_DIR$/cged_data.py" />
-        <option value="$PROJECT_DIR$/model/ernie.py" />
         <option value="$PROJECT_DIR$/run_sequence_labeling.py" />
-        <option value="$PROJECT_DIR$/model/transformer_encoder.py" />
         <option value="$PROJECT_DIR$/optimization.py" />
         <option value="$PROJECT_DIR$/model/classifier_remodel.py" />
+        <option value="$PROJECT_DIR$/cged_data.py" />
+        <option value="$PROJECT_DIR$/model/ernie.py" />
+        <option value="$PROJECT_DIR$/model/transformer_encoder.py" />
         <option value="$PROJECT_DIR$/finetune/sequence_label.py" />
+        <option value="$PROJECT_DIR$/cged17.py" />
         <option value="$PROJECT_DIR$/script/run_msra_ner.sh" />
       </list>
     </option>
@@ -282,17 +286,18 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1920" height="1080" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.5016155" side_tool="true" weight="0.21367522" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="File Transfer" order="7" sideWeight="0.4983845" visible="true" weight="0.2281059" />
+      <window_info anchor="bottom" id="File Transfer" order="7" sideWeight="0.4983845" weight="0.3190883" />
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Python Console" order="7" />
       <window_info anchor="bottom" id="Terminal" order="7" />
       <window_info anchor="right" id="Remote Host" order="3" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.33013844" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2172524" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="right" id="Database" order="3" />
       <window_info anchor="bottom" id="Find" order="1" />
@@ -316,20 +321,10 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="4" />
+      <option name="time" value="5" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/run_sequence_labeling.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1215">
-          <caret line="99" column="41" selection-start-line="99" selection-start-column="41" selection-end-line="99" selection-end-column="41" />
-          <folding>
-            <element signature="e#655#693#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/model/classifier_remodel.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="45">
@@ -540,20 +535,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/give_cged_tag.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="537">
-          <caret line="94" column="28" lean-forward="true" selection-start-line="94" selection-start-column="28" selection-end-line="94" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hsk_data.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1995">
-          <caret line="159" column="23" lean-forward="true" selection-start-line="159" selection-start-column="23" selection-end-line="159" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/model/classifier_remodel.py" />
     <entry file="file://$PROJECT_DIR$/utils/init.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -600,13 +581,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/model/ernie.py">
+    <entry file="file://$PROJECT_DIR$/model/transformer_encoder.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="580">
-          <caret line="121" column="44" lean-forward="true" selection-start-line="121" selection-start-column="44" selection-end-line="121" selection-end-column="44" />
-          <folding>
-            <element signature="e#632#670#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="548">
+          <caret line="354" column="18" selection-start-line="354" selection-start-column="18" selection-end-line="354" selection-end-column="18" />
         </state>
       </provider>
     </entry>
@@ -619,55 +597,82 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/run_sequence_labeling.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-260">
-          <caret line="255" column="52" selection-start-line="255" selection-start-column="52" selection-end-line="255" selection-end-column="52" />
+        <state relative-caret-position="-455">
+          <caret line="94" column="25" lean-forward="true" selection-start-line="94" selection-start-column="25" selection-end-line="94" selection-end-column="25" />
           <folding>
             <element signature="e#655#693#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/cged_data.py">
+    <entry file="file://$PROJECT_DIR$/model/ernie.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="179">
-          <caret line="270" column="31" lean-forward="true" selection-start-line="270" selection-start-column="31" selection-end-line="270" selection-end-column="31" />
+        <state relative-caret-position="783">
+          <caret line="143" column="31" selection-start-line="143" selection-start-column="31" selection-end-line="143" selection-end-column="31" />
           <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/model/transformer_encoder.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="531">
-          <caret line="373" column="23" lean-forward="true" selection-start-line="373" selection-start-column="23" selection-end-line="373" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/finetune/sequence_label.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="177">
-          <caret line="86" column="42" selection-start-line="86" selection-start-column="42" selection-end-line="86" selection-end-column="42" />
-          <folding>
-            <element signature="e#613#651#0" expanded="true" />
+            <element signature="e#632#670#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/model/classifier_remodel.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="14" column="4" selection-start-line="14" selection-start-column="4" selection-end-line="14" selection-end-column="4" />
+        <state relative-caret-position="209">
+          <caret line="471" column="53" lean-forward="true" selection-start-line="471" selection-start-column="38" selection-end-line="471" selection-end-column="53" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/hsk_data.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1330">
+          <caret line="32" column="48" selection-start-line="32" selection-start-column="27" selection-end-line="32" selection-end-column="48" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cged_data.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="229">
+          <caret line="198" column="38" selection-start-line="198" selection-start-column="38" selection-end-line="198" selection-end-column="38" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/give_cged_tag.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="142">
+          <caret line="21" column="39" lean-forward="true" selection-start-line="21" selection-start-column="39" selection-end-line="21" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/cged17.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="203">
+          <caret line="119" column="13" lean-forward="true" selection-start-line="119" selection-start-column="13" selection-end-line="119" selection-end-column="13" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/finetune/sequence_label.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-476">
+          <caret line="70" column="48" lean-forward="true" selection-start-line="70" selection-start-column="48" selection-end-line="70" selection-end-column="48" />
+          <folding>
+            <element signature="e#613#651#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/script/run_msra_ner.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="529">
-          <caret line="137" lean-forward="true" selection-start-line="137" selection-end-line="137" />
+        <state relative-caret-position="176">
+          <caret line="112" column="36" lean-forward="true" selection-start-line="112" selection-start-column="36" selection-end-line="112" selection-end-column="36" />
         </state>
       </provider>
     </entry>

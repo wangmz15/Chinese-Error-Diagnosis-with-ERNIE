@@ -1,39 +1,70 @@
 import csv
 import tqdm, random, re
+from tqdm import trange
 import thulac
 from bs4 import BeautifulSoup
 from collections import namedtuple
 
 
-HSK_TEST = '/data/disk1/private/wangmuzi/raw_data/nlptea16cged/Test'
+TEST = '/data/disk1/private/wangmuzi/raw_data/cged17'
+TRAIN_RAW = '/data/disk1/private/wangmuzi/raw_data/cged17'
 HSK_DATA='/data/disk1/private/wangmuzi/data/detection/hsk'
 TOCFL_DATA='/data/disk1/private/wangmuzi/data/detection/tocfl'
-ERNIE_DATA='/data/disk1/private/wangmuzi/data/ERNIE/cged_seg'
+ERNIE_DATA='/data/disk1/private/wangmuzi/data/ERNIE/cged17'
 
-def get_train_dev():
-    with open(HSK_DATA + '/train.txt') as train_txt, \
-            open(HSK_DATA + '/train.tag') as train_tag, \
-            open(HSK_DATA + '/valid.txt') as valid_txt, \
-            open(HSK_DATA + '/valid.tag') as valid_tag, \
-            open(ERNIE_DATA + '/train.tsv', 'w') as train, \
-            open(ERNIE_DATA + '/valid.tsv', 'w') as valid:
-        csvData = [['text_a', 'label']]
-        for txt, tag in zip(train_txt, train_tag):
-            csvData.append([u"".join(txt.strip().split()), u"".join(tag.strip().split())])
+def get_train_dev(src_dir):
+    csvData = [['text_a', 'label']]
+    with open(src_dir, 'r', encoding='UTF-8') as f, open(ERNIE_DATA + '/train.tsv', 'w') as train:
+        datas = []
+        cnt = 0
+        lines = ''.join(f.readlines())
+        soup = BeautifulSoup(lines, "html.parser")
+        datas = soup.find_all('doc')
+        wrong = 0
+        print(len(datas))
+        for essay in datas:
+            if essay == None:
+                continue
+            try:
+                id = essay.find("text")['id']
+            except:
+                wrong += 1
+                continue
+            txt = essay.find("text").text.strip().replace('\n', '')
+            tags = len(txt) * ["O"]
+            sent_err = []
+            mistakes = essay.find_all("error")
+            for mistake in mistakes:
+                try:
+                    type = mistake['type']
+                    start = int(mistake['start_off']) - 1
+                    end = int(mistake['end_off']) - 1
+                    sent_err.append(mistake['start_off'] + ' ' + mistake['end_off'] + ' ' + type)
+                except ValueError:
+                    print(cnt)
+                try:
+                    if start == end:
+                        tags[start] = type + 'b'
+                    else:
+                        tags[start] = type + 'b'
+                        for i in range(start + 1, end + 1):
+                            tags[i] = type + 'i'
+                except IndexError:
+                    print('index error:   essay id:{0}, start_off:{1}, end_off:{2}, length：{3}'.format(id, start + 1,
+                                                                                                       end + 1,
+                                                                                                       len(txt)))
+                    continue
+            assert len(txt) == len(tags)
+            csvData.append([u"".join(txt), u"".join(tags)])
         train_w = csv.writer(train, delimiter="\t")
         train_w.writerows(csvData)
-
-        csvData = [['text_a', 'label']]
-        for txt, tag in zip(valid_txt, valid_tag):
-            csvData.append([u"".join(txt.strip().split()), u"".join(tag.strip().split())])
-        valid_w = csv.writer(valid, delimiter="\t")
-        valid_w.writerows(csvData)
+        print('wrong number:', wrong)
 
 
 
 def get_test():
-    with open(HSK_TEST + '/CGED16_HSK_Test_Input.txt') as test_txt, \
-            open(HSK_TEST + '/CGED16_HSK_Test_Truth.txt') as test_tag, \
+    with open(TEST + '/test.HSK.Input.txt') as test_txt, \
+            open(TEST + '/test.truth.txt') as test_tag, \
             open(ERNIE_DATA + '/test.tsv', 'w') as test:
         test_data = {}
         cnt = 0
@@ -126,72 +157,27 @@ def get_seg(txt, tag):
 
 
 def get_train_dev_seg():
-    with open(HSK_DATA + '/train.txt') as train_txt, \
-            open(HSK_DATA + '/train.tag') as train_tag, \
-            open(HSK_DATA + '/valid.txt') as valid_txt, \
-            open(HSK_DATA + '/valid.tag') as valid_tag, \
-            open(TOCFL_DATA + '/train.txt') as train_txt_tocfl, \
-            open(TOCFL_DATA + '/train.tag') as train_tag_tocfl, \
-            open(TOCFL_DATA + '/valid.txt') as valid_txt_tocfl, \
-            open(TOCFL_DATA + '/valid.tag') as valid_tag_tocfl, \
-            open(ERNIE_DATA + '/train_hsk62.tsv', 'w') as train, \
-            open(ERNIE_DATA + '/valid_hsk62.tsv', 'w') as valid, \
-            open(ERNIE_DATA + '/hsk62.tsv', 'w') as cged:
-        train_txt = [i.strip().replace('\n','').replace(' ','') for i in train_txt.readlines()]
-        train_tag = [i.strip().replace('\n','').split() for i in train_tag.readlines()]
-        valid_txt = [i.strip().replace('\n','').replace(' ','') for i in valid_txt.readlines()]
-        valid_tag = [i.strip().replace('\n','').split() for i in valid_tag.readlines()]
-        # train_txt_tocfl = [i.strip().replace('\n','').replace(' ','') for i in train_txt_tocfl.readlines()]
-        # train_tag_tocfl = [i.strip().replace('\n','').split() for i in train_tag_tocfl.readlines()]
-        # valid_txt_tocfl = [i.strip().replace('\n','').replace(' ','') for i in valid_txt_tocfl.readlines()]
-        # valid_tag_tocfl = [i.strip().replace('\n','').split() for i in valid_tag_tocfl.readlines()]
+    with open(ERNIE_DATA + '/train.tsv') as fr, open(ERNIE_DATA + '/train62.tsv', 'w') as fw:
+        reader = csv.reader(fr, delimiter="\t", quotechar=None)
+        writer = csv.writer(fw, delimiter="\t")
+        writer.writerow(['text_a', 'label'])
 
-        hsk_train_txt,hsk_train_tag, hsk_valid_txt, hsk_valid_tag, tocfl_train_txt, tocfl_train_tag, tocfl_valid_txt, tocfl_valid_tag = [],[],[],[],[],[],[],[]
-        for txt, tag in zip(train_txt, train_tag):
-            a,b = cut_sent(txt,tag)
-            hsk_train_txt.extend(a)
-            hsk_train_tag.extend(b)
-        for txt, tag in zip(valid_txt, valid_tag):
-            a, b = cut_sent(txt,tag)
-            hsk_valid_txt.extend(a)
-            hsk_valid_tag.extend(b)
-        # for txt, tag in zip(train_txt_tocfl, train_tag_tocfl):
-        #     a, b = cut_sent(txt,tag)
-        #     tocfl_train_txt.extend(a)
-        #     tocfl_train_tag.extend(b)
-        # for txt, tag in zip(valid_txt_tocfl, valid_tag_tocfl):
-        #     a, b = cut_sent(txt,tag)
-        #     tocfl_valid_txt.extend(a)
-        #     tocfl_valid_tag.extend(b)
-
-        hsk_train_txt, hsk_train_tag = cut_short(hsk_train_txt, hsk_train_tag)
-        hsk_valid_txt, hsk_valid_tag = cut_short(hsk_valid_txt, hsk_valid_tag)
-        # tocfl_train_txt, tocfl_train_tag = cut_short(tocfl_train_txt, tocfl_train_tag)
-        # tocfl_valid_txt, tocfl_valid_tag = cut_short(tocfl_valid_txt, tocfl_valid_tag)
-        get_seg(hsk_train_txt, hsk_train_tag)
-        get_seg(hsk_valid_txt, hsk_valid_tag)
-        # get_seg(tocfl_train_txt, tocfl_train_tag)
-        # get_seg(tocfl_valid_txt, tocfl_valid_tag)
-
-        train_w = csv.writer(train, delimiter="\t")
-        train_w.writerow(['text_a', 'label'])
-        valid_w = csv.writer(valid, delimiter="\t")
-        valid_w.writerow(['text_a', 'label'])
-        cged_w = csv.writer(cged, delimiter="\t")
-        cged_w.writerow(['text_a', 'label'])
-
-        random.shuffle(global_csvData)
-
-        valid_index = random.sample(range(len(global_csvData)), int(0 * len(global_csvData)))
+        final_txt = []
+        final_tag = []
+        for item in tqdm.tqdm(reader):
+            if reader.line_num == 1:
+                continue
+            param = ''.join(item[0].split(u""))
+            tags = item[1].split(u"")
+            a, b = cut_sent(param, tags)
+            # print(a,b)
+            final_txt.extend(a)
+            final_tag.extend(b)
+        # get_seg(final_txt,final_tag)
+        final_txt, final_tag = cut_short(final_txt, final_tag)
+        get_seg(final_txt, final_tag)
         for i in range(len(global_csvData)):
-            cged_w.writerow(global_csvData[i])
-            if i not in valid_index:
-                train_w.writerow(global_csvData[i])
-            else:
-                valid_w.writerow(global_csvData[i])
-
-
-
+            writer.writerow(global_csvData[i])
 
 
 def get_test_seg():
@@ -325,7 +311,7 @@ def get_cut_sent_test():
 
 if __name__ == "__main__":
     # get_test()
-    # get_train_dev()
+    # get_train_dev(TRAIN_RAW+'/train.release.xml')
     get_train_dev_seg()
     # get_test_seg()
     # get_cut_sent_test()

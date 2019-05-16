@@ -82,9 +82,9 @@ def create_model(args,
     # j += 1
     #   print(words[j].shape)
 
-    # new_enc_out = enc_out
+    new_enc_out = enc_out
     # new_enc_out = classifier_concat_left_middle_right(enc_out)
-    new_enc_out = classifier_concat_left2_middle_right2(enc_out)
+    # new_enc_out = classifier_concat_left2_middle_right2(enc_out)
     # new_enc_out = classifier_maxPool_left_middle_right_33(enc_out)
     # new_enc_out = classifier_avgPool_left_middle_right_33_concat_middle(enc_out)
     # new_enc_out = classifier_maxPool_left_right_21_concat_middle(enc_out)
@@ -131,24 +131,39 @@ def create_model(args,
         bias_attr=fluid.ParamAttr(
             name="cls_seq_label_out_b", initializer=fluid.initializer.Constant(0.)))
 
-
-    print('labels shape:', labels.shape)
     ret_labels = fluid.layers.reshape(x=labels, shape=[-1,1])
     ret_infers = fluid.layers.reshape(x=fluid.layers.argmax(logits, axis=2), shape=[-1,1])
-    # print('ret_labels shape:',ret_labels.shape)
-    # print('ret_infers shape:',ret_infers.shape)
     labels = fluid.layers.flatten(labels, axis=2)
-    print('labels shape:',labels.shape)
-
-
-    print('logits shape:', logits.shape)
     logits = fluid.layers.flatten(logits, axis=2)
-    print('flatten and reshape\n', logits)
     ce_loss, probs = fluid.layers.softmax_with_cross_entropy(
         logits=logits,
         label=labels, return_softmax=True)
-    print(ce_loss)
     loss = fluid.layers.mean(x=ce_loss)
+    # word = fluid.layers.data(name='word', shape=[1], dtype='float32', lod_level=1)
+    # # word = fluid.layers.increment(x=word, value=1.0, in_place=True)
+    # word = fluid.layers.array_write(x=word, i=layers.fill_constant(shape=[1], dtype='int64', value=0))
+    #
+    # lod = [[0]+[1]*(4096)]
+    # # print(lod)
+    # lod = list(np.cumsum(lod))
+    # # print(lod)
+    # logits = fluid.layers.lod_reset(x=logits, y=word)
+    # print(logits)
+    # logits = fluid.layers.lod_reset(x=logits, target_lod=lod)
+    # print(logits)
+    #
+    # crf_cost = layers.linear_chain_crf(
+    #     input=logits,
+    #     label=labels,
+    #     param_attr=fluid.ParamAttr(
+    #         name='crfw', initializer=fluid.initializer.Constant(0.)))
+    # # print('crf_cost', crf_cost)
+    # loss = fluid.layers.mean(x=crf_cost)
+    # crf_decode = layers.crf_decoding(input=logits, param_attr=fluid.ParamAttr(name="crfw", initializer=fluid.initializer.Constant(0.)))
+    # # print(crf_decode)
+    # ret_infers = fluid.layers.flatten(crf_decode, axis=2)
+    # # print(ret_infers)
+    # probs = 0.0
 
     if args.use_fp16 and args.loss_scaling > 1.0:
         loss *= args.loss_scaling
@@ -166,7 +181,11 @@ def create_model(args,
 
 
     for k, v in graph_vars.items():
-        v.persistable=True
+        try:
+            v.persistable=True
+        except:
+            print('??',v)
+            continue
 
     return pyreader, graph_vars
 
