@@ -592,3 +592,173 @@ def layer_avgPool_concat_last(all_layers, enc_out):
     new_enc_out = layers.concat([enc_out, new_enc_out], axis=2)
     print(new_enc_out)
     return new_enc_out
+
+####################################################################
+
+
+def classifier_avg_channel_attn(enc_out):
+    avg = layers.reduce_mean(enc_out, dim=1, keep_dim=True)
+    fc1 = layers.fc(input=avg, size=avg.shape[-1]//16, act="relu")
+    fc2 = layers.fc(input=fc1, size=avg.shape[-1], act="sigmoid")
+    avg = layers.stack(x=[fc2] * enc_out.shape[1], axis=1)
+    mut = avg * enc_out
+    return mut
+
+
+def classifier_max_channel_attn(enc_out):
+    max = layers.reduce_max(enc_out, dim=1, keep_dim=True) #-1*1*768
+    fc1 = layers.fc(input=max, size=max.shape[-1]//16, act="relu") #-1*48
+    fc2 = layers.fc(input=fc1, size=max.shape[-1], act="sigmoid") #-1*768
+    max = layers.stack(x=[fc2] * enc_out.shape[1], axis=1) #-1*64*768
+    mut = max * enc_out #-1*64*768
+    return mut
+
+
+def classifier_avg_max_channel_attn(enc_out):
+    avg = layers.reduce_mean(enc_out, dim=1, keep_dim=True)  # -1*1*768
+    fc1_avg = layers.fc(input=avg, size=avg.shape[-1]//16, act="relu") #-1*16
+    fc2_avg = layers.fc(input=fc1_avg, size=avg.shape[-1]) #-1*768
+
+    max = layers.reduce_max(enc_out, dim=1, keep_dim=True) # -1*1*768
+    fc1_max = layers.fc(input=max, size=max.shape[-1]//16, act="relu") #-1*16
+    fc2_max = layers.fc(input=fc1_max, size=max.shape[-1]) #-1*768
+
+    fc = layers.sigmoid(fc2_avg + fc2_max) #-1*768
+
+    esemble = layers.stack(x=[fc] * enc_out.shape[1], axis=1) #-1*64*768
+    mut = esemble * enc_out
+    return mut
+
+def classifier_avg_word_attn(enc_out):
+    avg = layers.reduce_mean(enc_out, dim=2, keep_dim=True) # -1*64*1
+    fc1 = layers.fc(input=avg, size=enc_out.shape[1] // 4, act="relu") #-1*16
+    fc2 = layers.fc(input=fc1, size=enc_out.shape[1], act="sigmoid")#-1*64
+    avg = layers.stack(x=[fc2] * enc_out.shape[2], axis=2)#-1*64*768
+    mut = avg * enc_out #-1*64*768
+    return mut
+
+def classifier_max_word_attn(enc_out):
+    max = layers.reduce_max(enc_out, dim=2, keep_dim=True) # -1*64*1
+    fc1 = layers.fc(input=max, size=enc_out.shape[1] // 4, act="relu") #-1*16
+    fc2 = layers.fc(input=fc1, size=enc_out.shape[1], act="sigmoid")#-1*64
+    max = layers.stack(x=[fc2] * enc_out.shape[2], axis=2)#-1*64*768
+    mut = max * enc_out #-1*64*768
+    return mut
+
+def classifier_max_channel_attn_avg_word_attn(enc_out):
+    max = layers.reduce_max(enc_out, dim=1, keep_dim=True)  # -1*1*768
+    fc1 = layers.fc(input=max, size=max.shape[-1] // 16, act="relu")  # -1*48
+    fc2 = layers.fc(input=fc1, size=max.shape[-1], act="sigmoid")  # -1*768
+    max = layers.stack(x=[fc2] * enc_out.shape[1], axis=1)  # -1*64*768
+    mut = max * enc_out  # -1*64*768
+
+    avg = layers.reduce_mean(mut, dim=2, keep_dim=True) # -1*64*1
+    fc1 = layers.fc(input=avg, size=enc_out.shape[1] // 4, act="relu") #-1*16
+    fc2 = layers.fc(input=fc1, size=enc_out.shape[1], act="sigmoid")#-1*64
+    max = layers.stack(x=[fc2] * enc_out.shape[2], axis=2)#-1*64*768
+    mut = max * mut #-1*64*768
+    return mut
+
+
+def classifier_max_channel_attn_max_word_attn(enc_out):
+    max = layers.reduce_max(enc_out, dim=1, keep_dim=True)  # -1*1*768
+    fc1 = layers.fc(input=max, size=max.shape[-1] // 16, act="relu")  # -1*48
+    fc2 = layers.fc(input=fc1, size=max.shape[-1], act="sigmoid")  # -1*768
+    max = layers.stack(x=[fc2] * enc_out.shape[1], axis=1)  # -1*64*768
+    mut = max * enc_out  # -1*64*768
+
+    avg = layers.reduce_max(mut, dim=2, keep_dim=True) # -1*64*1
+    fc1 = layers.fc(input=avg, size=enc_out.shape[1] // 4, act="relu") #-1*16
+    fc2 = layers.fc(input=fc1, size=enc_out.shape[1], act="sigmoid")#-1*64
+    max = layers.stack(x=[fc2] * enc_out.shape[2], axis=2)#-1*64*768
+    mut = max * mut #-1*64*768
+    return mut
+
+
+####################################################################
+
+
+def classifier_avg_channel_attn_concat_last(enc_out):
+    avg = layers.reduce_mean(enc_out, dim=1, keep_dim=True)
+    fc1 = layers.fc(input=avg, size=avg.shape[-1]//16, act="relu")
+    fc2 = layers.fc(input=fc1, size=avg.shape[-1], act="sigmoid")
+    avg = layers.stack(x=[fc2] * enc_out.shape[1], axis=1)
+    mut = avg * enc_out
+    new_enc_out = layers.concat([enc_out,mut], axis=2)
+    return new_enc_out
+
+
+def classifier_max_channel_attn_concat_last(enc_out):
+    max = layers.reduce_max(enc_out, dim=1, keep_dim=True) #-1*1*768
+    fc1 = layers.fc(input=max, size=max.shape[-1]//16, act="relu") #-1*48
+    fc2 = layers.fc(input=fc1, size=max.shape[-1], act="sigmoid") #-1*768
+    max = layers.stack(x=[fc2] * enc_out.shape[1], axis=1) #-1*64*768
+    mut = max * enc_out #-1*64*768
+    new_enc_out = layers.concat([enc_out,mut], axis=2)
+    return new_enc_out
+
+
+def classifier_avg_max_channel_attn_concat_last(enc_out):
+    avg = layers.reduce_mean(enc_out, dim=1, keep_dim=True)  # -1*1*768
+    fc1_avg = layers.fc(input=avg, size=avg.shape[-1]//16, act="relu") #-1*16
+    fc2_avg = layers.fc(input=fc1_avg, size=avg.shape[-1]) #-1*768
+
+    max = layers.reduce_max(enc_out, dim=1, keep_dim=True) # -1*1*768
+    fc1_max = layers.fc(input=max, size=max.shape[-1]//16, act="relu") #-1*16
+    fc2_max = layers.fc(input=fc1_max, size=max.shape[-1]) #-1*768
+
+    fc = layers.sigmoid(fc2_avg + fc2_max) #-1*768
+
+    esemble = layers.stack(x=[fc] * enc_out.shape[1], axis=1) #-1*64*768
+    mut = esemble * enc_out
+    new_enc_out = layers.concat([enc_out,mut], axis=2)
+    return new_enc_out
+
+def classifier_avg_word_attn_concat_last(enc_out):
+    avg = layers.reduce_mean(enc_out, dim=2, keep_dim=True) # -1*64*1
+    fc1 = layers.fc(input=avg, size=enc_out.shape[1] // 4, act="relu") #-1*16
+    fc2 = layers.fc(input=fc1, size=enc_out.shape[1], act="sigmoid")#-1*64
+    avg = layers.stack(x=[fc2] * enc_out.shape[2], axis=2)#-1*64*768
+    mut = avg * enc_out #-1*64*768
+    new_enc_out = layers.concat([enc_out,mut], axis=2)
+    return new_enc_out
+
+def classifier_max_word_attn_concat_last(enc_out):
+    max = layers.reduce_max(enc_out, dim=2, keep_dim=True) # -1*64*1
+    fc1 = layers.fc(input=max, size=enc_out.shape[1] // 4, act="relu") #-1*16
+    fc2 = layers.fc(input=fc1, size=enc_out.shape[1], act="sigmoid")#-1*64
+    max = layers.stack(x=[fc2] * enc_out.shape[2], axis=2)#-1*64*768
+    mut = max * enc_out #-1*64*768
+    new_enc_out = layers.concat([enc_out,mut], axis=2)
+    return new_enc_out
+
+def classifier_max_channel_attn_avg_word_attn_concat_last(enc_out):
+    max = layers.reduce_max(enc_out, dim=1, keep_dim=True)  # -1*1*768
+    fc1 = layers.fc(input=max, size=max.shape[-1] // 16, act="relu")  # -1*48
+    fc2 = layers.fc(input=fc1, size=max.shape[-1], act="sigmoid")  # -1*768
+    max = layers.stack(x=[fc2] * enc_out.shape[1], axis=1)  # -1*64*768
+    mut = max * enc_out  # -1*64*768
+
+    avg = layers.reduce_mean(mut, dim=2, keep_dim=True) # -1*64*1
+    fc1 = layers.fc(input=avg, size=enc_out.shape[1] // 4, act="relu") #-1*16
+    fc2 = layers.fc(input=fc1, size=enc_out.shape[1], act="sigmoid")#-1*64
+    max = layers.stack(x=[fc2] * enc_out.shape[2], axis=2)#-1*64*768
+    mut = max * mut #-1*64*768
+    new_enc_out = layers.concat([enc_out,mut], axis=2)
+    return new_enc_out
+
+
+def classifier_max_channel_attn_max_word_attn_concat_last(enc_out):
+    max = layers.reduce_max(enc_out, dim=1, keep_dim=True)  # -1*1*768
+    fc1 = layers.fc(input=max, size=max.shape[-1] // 16, act="relu")  # -1*48
+    fc2 = layers.fc(input=fc1, size=max.shape[-1], act="sigmoid")  # -1*768
+    max = layers.stack(x=[fc2] * enc_out.shape[1], axis=1)  # -1*64*768
+    mut = max * enc_out  # -1*64*768
+
+    avg = layers.reduce_max(mut, dim=2, keep_dim=True) # -1*64*1
+    fc1 = layers.fc(input=avg, size=enc_out.shape[1] // 4, act="relu") #-1*16
+    fc2 = layers.fc(input=fc1, size=enc_out.shape[1], act="sigmoid")#-1*64
+    max = layers.stack(x=[fc2] * enc_out.shape[2], axis=2)#-1*64*768
+    mut = max * mut #-1*64*768
+    new_enc_out = layers.concat([enc_out,mut], axis=2)
+    return new_enc_out

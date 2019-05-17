@@ -242,15 +242,15 @@ def main(args):
                     time_begin = time.time()
 
                 if steps % args.save_steps == 0:
-                    if outputs["loss"] < best_loss and outputs['loss'] < 0.001:
+                    if outputs["loss"] < best_loss and outputs['loss'] < args.max_loss:
                         best_loss = outputs['loss']
                         save_path = os.path.join(args.checkpoints,
                                              "train_%f_step_%d" % (outputs['loss'],steps))
                         fluid.io.save_persistables(exe, save_path, train_program)
                         print('save train model at step '+ str(steps))
 
-
-                if steps % args.validation_steps == 0:
+                valid_step = args.validation_steps if (steps*0.1/max_train_steps*0.1) > 1/10 else args.validation_steps*5
+                if steps % valid_step == 0:
                     # evaluate dev set
                     if args.do_val:
                         test_pyreader.decorate_tensor_provider(
@@ -271,7 +271,7 @@ def main(args):
                                 shuffle=False))
                         outputs = evaluate(exe, test_prog, test_pyreader, graph_vars,
                                  args.num_labels, "test")
-                        if outputs["f1"] > best_f1 and outputs["f1"] > 0.35:
+                        if outputs["f1"] > best_f1 and outputs["f1"] > args.min_f1:
                             best_f1 = outputs['f1']
                             save_path = os.path.join(args.checkpoints,
                                                      "test_%f_step_%d" % (outputs['f1'], steps))

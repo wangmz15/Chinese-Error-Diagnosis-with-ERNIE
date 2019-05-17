@@ -45,6 +45,8 @@ train_g.add_arg("validation_steps",  int,    1000,    "The steps interval to eva
 train_g.add_arg("use_fp16",          bool,   False,   "Whether to use fp16 mixed precision training.")
 train_g.add_arg("loss_scaling",      float,  1.0,
                 "Loss scaling factor for mixed precision training, only valid when use_fp16 is enabled.")
+train_g.add_arg("min_f1",     float,  0.35,  "min_f1")
+train_g.add_arg("max_loss",     float,  0.001,  "max_loss")
 
 log_g = ArgumentGroup(parser,     "logging", "logging related.")
 log_g.add_arg("skip_steps",          int,    10,    "The steps interval to print loss.")

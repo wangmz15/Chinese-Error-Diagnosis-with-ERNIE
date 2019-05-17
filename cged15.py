@@ -6,11 +6,10 @@ from bs4 import BeautifulSoup
 from collections import namedtuple
 
 
-TEST = '/data/disk1/private/wangmuzi/raw_data/cged17'
-TRAIN_RAW = '/data/disk1/private/wangmuzi/raw_data/cged17'
+TEST = '/data/disk1/private/wangmuzi/raw_data/nlptea15cged'
+TRAIN_RAW = '/data/disk1/private/wangmuzi/raw_data/nlptea15cged/Training'
 HSK_DATA='/data/disk1/private/wangmuzi/data/detection/hsk'
-TOCFL_DATA='/data/disk1/private/wangmuzi/data/detection/tocfl'
-ERNIE_DATA='/data/disk1/private/wangmuzi/data/ERNIE/cged17'
+ERNIE_DATA='/data/disk1/private/wangmuzi/data/ERNIE/cged15'
 
 def get_train_dev(src_dir):
     csvData = [['text_a', 'label']]
@@ -26,17 +25,19 @@ def get_train_dev(src_dir):
             if essay == None:
                 continue
             try:
-                id = essay.find("text")['id']
+                id = essay.find("sentence")['id']
             except:
                 wrong += 1
                 continue
-            txt = essay.find("text").text.strip().replace('\n', '')
+            txt = essay.find("sentence").text.strip().replace('\n', '')
             tags = len(txt) * ["O"]
             sent_err = []
-            mistakes = essay.find_all("error")
+            mistakes = essay.find_all("mistake")
             for mistake in mistakes:
                 try:
-                    type = mistake['type']
+                    type = mistake.find('type')
+                    print(type)
+                    type = type.text[0].replace('D', 'W')
                     start = int(mistake['start_off']) - 1
                     end = int(mistake['end_off']) - 1
                     sent_err.append(mistake['start_off'] + ' ' + mistake['end_off'] + ' ' + type)
@@ -61,51 +62,6 @@ def get_train_dev(src_dir):
         print('wrong number:', wrong)
 
 
-
-def get_test():
-    with open(TEST + '/test.HSK.Input.txt') as test_txt, \
-            open(TEST + '/test.truth.txt') as test_tag, \
-            open(ERNIE_DATA + '/test.tsv', 'w') as test:
-        test_data = {}
-        cnt = 0
-        for line in tqdm.tqdm(test_txt.readlines()):
-            sid, content = line.split(')')
-            sid = sid[5:]
-            content = [i for i in content.strip().rstrip()]
-            # print(sid,content)
-            # break
-            test_data[sid] = (content,[])
-        for line in tqdm.tqdm(test_tag.readlines()):
-            sid = line.split(',')[0]
-            content = test_data[sid][0]
-            tag = ['O'] * len(content)
-            if len(test_data[sid][1]):
-                # print(test_data[sid][1])
-                tag = test_data[sid][1]
-                # print(content, tag)
-            if len(line.split(',')) != 2:
-                start = int(line.split(',')[1].strip())-1
-                end = int(line.split(',')[2].strip())-1
-                type = line.split(',')[3].strip().rstrip()
-                try:
-                    tag[start] = type + 'b'
-                    for i in range(start + 1, end + 1):
-                        tag[i] = type + 'i'
-                except:
-                    cnt += 1
-                    print(sid, content)
-            # print(content, tag)
-            # break
-            test_data[sid] = (content, tag)
-
-        # exit(0)
-        print(cnt)
-
-        csvData = [['text_a', 'label']]
-        for sid, (txt, tag) in test_data.items():
-            csvData.append([u"".join(txt), u"".join(tag)])
-        train_w = csv.writer(test, delimiter="\t")
-        train_w.writerows(csvData)
 
 
 def cut_sent(para, tag):
@@ -175,56 +131,10 @@ def get_train_dev_seg():
             final_tag.extend(b)
         # get_seg(final_txt,final_tag)
         final_txt, final_tag = cut_short(final_txt, final_tag)
+        print(final_txt[0], final_tag[0])
         get_seg(final_txt, final_tag)
         for i in range(len(global_csvData)):
             writer.writerow(global_csvData[i])
-
-
-def get_test_seg():
-    with open(HSK_TEST + '/CGED16_HSK_Test_Input.txt') as test_txt, \
-            open(HSK_TEST + '/CGED16_HSK_Test_Truth.txt') as test_tag, \
-            open(ERNIE_DATA + '/test.tsv', 'w') as test:
-        test_data = {}
-        cnt = 0
-        for line in tqdm.tqdm(test_txt.readlines()):
-            sid, content = line.split(')')
-            sid = sid[5:]
-            content = [i for i in content.strip().rstrip()]
-            # print(sid,content)
-            # break
-            test_data[sid] = (content,[])
-        for line in tqdm.tqdm(test_tag.readlines()):
-            sid = line.split(',')[0]
-            content = test_data[sid][0]
-            tag = ['O'] * len(content)
-            if len(test_data[sid][1]):
-                # print(test_data[sid][1])
-                tag = test_data[sid][1]
-                # print(content, tag)
-            if len(line.split(',')) != 2:
-                start = int(line.split(',')[1].strip())-1
-                end = int(line.split(',')[2].strip())-1
-                type = line.split(',')[3].strip().rstrip()
-                try:
-                    tag[start] = type + 'b'
-                    for i in range(start + 1, end + 1):
-                        tag[i] = type + 'i'
-                except:
-                    cnt += 1
-                    print(sid, content)
-            # print(content, tag)
-            # break
-            test_data[sid] = (content, tag)
-
-
-        train_w = csv.writer(test, delimiter="\t")
-        train_w.writerow(['text_a', 'label'])
-        txts, tags = [], []
-        for id, (txt, tag) in test_data.items():
-            txts.append(''.join(txt))
-            tags.append(tag)
-
-        train_w.writerows(get_seg(txts, tags))
 
 def cut_sent_short(para, tag):
     para = re.sub('([。\t！？；\?])([^”’])', r"\1\n\2", para)  # 单字符断句符
@@ -284,34 +194,7 @@ def cut_short(final_txt, final_tag):
 
 
 
-def get_cut_sent_test():
-    with open(ERNIE_DATA + '/test.tsv') as fr, open(ERNIE_DATA + '/test62.tsv', 'w') as fw:
-        reader = csv.reader(fr, delimiter="\t", quotechar=None)
-        writer = csv.writer(fw, delimiter="\t")
-        writer.writerow(['text_a', 'label'])
-
-        final_txt = []
-        final_tag = []
-        for item in tqdm.tqdm(reader):
-            if reader.line_num == 1:
-                continue
-            param = ''.join(item[0].split(u""))
-            tags = item[1].split(u"")
-            a, b = cut_sent(param,tags)
-            # print(a,b)
-            final_txt.extend(a)
-            final_tag.extend(b)
-        # get_seg(final_txt,final_tag)
-        final_txt, final_tag = cut_short(final_txt,final_tag)
-        for txt,tag in zip(final_txt, final_tag):
-            writer.writerow([u"".join([i for i in txt]), u"".join(tag)])
-        # exit(0)
-
-
 
 if __name__ == "__main__":
-    # get_test()
-    # get_train_dev(TRAIN_RAW+'/train.release.xml')
+    # get_train_dev(TRAIN_RAW+'/NLPTEA15_CGED_Training.sgml')
     get_train_dev_seg()
-    # get_test_seg()
-    # get_cut_sent_test()

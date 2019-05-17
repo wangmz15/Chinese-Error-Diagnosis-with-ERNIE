@@ -82,7 +82,7 @@ def create_model(args,
     # j += 1
     #   print(words[j].shape)
 
-    new_enc_out = enc_out
+    # new_enc_out = enc_out
     # new_enc_out = classifier_concat_left_middle_right(enc_out)
     # new_enc_out = classifier_concat_left2_middle_right2(enc_out)
     # new_enc_out = classifier_maxPool_left_middle_right_33(enc_out)
@@ -120,6 +120,18 @@ def create_model(args,
     # print('enc_out', enc_out)
     # new_enc_out = classifier_avgPool_left_right_21_concat_middle(enc_out)
     # print('new_enc_out',new_enc_out)
+
+    # new_enc_out  = classifier_avg_channel_attn(enc_out)
+    # new_enc_out  = classifier_max_channel_attn(enc_out)
+    # new_enc_out  = classifier_avg_max_channel_attn(enc_out)
+    # new_enc_out = classifier_max_word_attn(enc_out)
+    # new_enc_out = classifier_max_channel_attn_max_word_attn(enc_out)
+
+    # new_enc_out  = classifier_avg_channel_attn_concat_last(enc_out)
+    # new_enc_out  = classifier_max_channel_attn_concat_last(enc_out)
+    # new_enc_out  = classifier_avg_max_channel_attn_concat_last(enc_out)
+    # new_enc_out = classifier_max_word_attn_concat_last(enc_out)
+    new_enc_out = classifier_max_channel_attn_max_word_attn_concat_last(enc_out)
 
     logits = fluid.layers.fc(
         input=new_enc_out,
