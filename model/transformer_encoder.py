@@ -22,6 +22,7 @@ import numpy as np
 
 import paddle.fluid as fluid
 import paddle.fluid.layers as layers
+# from model.classifier_remodel import *
 
 
 def multi_head_attention(queries,
@@ -368,6 +369,9 @@ def encoder(enc_input,
             postprocess_cmd,
             param_initializer=param_initializer,
             name=name + '_layer_' + str(i))
+        # enc_output = classifier_max_channel_attn(enc_output)
+        # enc_output = channel_avg_max_attn(enc_output)
+        # enc_output = spacial_avg_max_attn(enc_output)
         all_layers.append(enc_output)
         enc_input = enc_output
     for i in range(n_layer):

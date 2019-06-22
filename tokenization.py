@@ -118,7 +118,9 @@ class FullTokenizer(object):
     def tokenize(self, text):
         split_tokens = []
         for token in self.basic_tokenizer.tokenize(text):
+            # print('after basic_tokenizer:', token)
             for sub_token in self.wordpiece_tokenizer.tokenize(token):
+                # print(sub_token)
                 split_tokens.append(sub_token)
         # print(split_tokens)
         return split_tokens
@@ -176,9 +178,10 @@ class BasicTokenizer(object):
         # characters in the vocabulary because Wikipedia does have some Chinese
         # words in the English Wikipedia.).
         text = self._tokenize_chinese_chars(text)
-
+        # print('_tokenize_chinese_chars',text)
         orig_tokens = whitespace_tokenize(text)
         split_tokens = []
+        # print('orig_tokens:',orig_tokens)
         for token in orig_tokens:
             if self.do_lower_case:
                 token = token.lower()
@@ -186,6 +189,8 @@ class BasicTokenizer(object):
             split_tokens.extend(self._run_split_on_punc(token))
 
         output_tokens = whitespace_tokenize(" ".join(split_tokens))
+        # print('output_tokens', output_tokens)
+        output_tokens = [''.join(output_tokens)]
         return output_tokens
 
     def _run_strip_accents(self, text):
@@ -295,6 +300,7 @@ class WordpieceTokenizer(object):
         """
 
         text = convert_to_unicode(text)
+        # print('text: ',text)
 
         output_tokens = []
         for token in whitespace_tokenize(text):

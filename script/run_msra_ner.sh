@@ -1,7 +1,7 @@
 
 #!/usr/bin/env bash
 export FLAGS_sync_nccl_allreduce=1
-export CUDA_VISIBLE_DEVICES=1
+export CUDA_VISIBLE_DEVICES=3
 export LD_LIBRARY_PATH='/usr/local/cuda-9.0/lib64'
 #export LD_LIBRARY_PATH='~/.conda/envs/env36/lib'
 #export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
@@ -24,14 +24,14 @@ python -u run_sequence_labeling.py \
                    --save_steps 400 \
                    --weight_decay  0.01 \
                    --warmup_proportion 0.02 \
-                   --epoch 100 \
+                   --epoch 300 \
                    --validation_steps 200 \
                    --max_seq_len 64 \
                    --learning_rate 5e-5 \
                    --skip_steps 100 \
                    --num_iteration_per_drop_scope 1 \
                    --random_seed 1 \
-                   --checkpoints ${TASK_DATA_PATH}/classifier_max_channel_attn_max_word_attn_concat_last \
+                   --checkpoints ${TASK_DATA_PATH}/origin \
                    --init_pretraining_params ${MODEL_PATH}/params
 
                    --checkpoints ${TASK_DATA_PATH}/classifier_weightedAdd_all_attention_concat_middle \
@@ -59,6 +59,26 @@ python -u run_sequence_labeling.py \
 
                    --checkpoints ${TASK_DATA_PATH}/origin1 \
                    --init_checkpoint ${TASK_DATA_PATH}/old_checkpoints/origin/step_420001
+
+export CUDA_VISIBLE_DEVICES=1
+TASK_DATA_PATH='/data/disk1/private/wangmuzi/data/ERNIE/cged_seg'
+python -u run_sequence_labeling.py \
+                   --use_cuda true \
+                   --do_train false \
+                   --do_val false \
+                   --do_test true \
+                   --batch_size 64 \
+                   --num_labels 9 \
+                   --label_map_config ${TASK_DATA_PATH}/label_map.json \
+                   --test_set ${TASK_DATA_PATH}/t.tsv \
+                   --vocab_path config/vocab.txt \
+                   --ernie_config_path config/ernie_config.json \
+                   --epoch 100 \
+                   --attn true \
+                   --validation_steps 200 \
+                   --max_seq_len 64 \
+                   --random_seed 1 \
+                   --init_checkpoint ${TASK_DATA_PATH}/layer_maxPool_concat_last/test_0.394478_step_273200
 
 ----------------------------------------cged17---------------------------------------------------------
 export FLAGS_sync_nccl_allreduce=1

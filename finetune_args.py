@@ -51,6 +51,7 @@ train_g.add_arg("max_loss",     float,  0.001,  "max_loss")
 log_g = ArgumentGroup(parser,     "logging", "logging related.")
 log_g.add_arg("skip_steps",          int,    10,    "The steps interval to print loss.")
 log_g.add_arg("verbose",             bool,   False, "Whether to output verbose log.")
+train_g.add_arg("attn",             bool,   False, "Whether to write attn score.")
 
 data_g = ArgumentGroup(parser, "data", "Data paths, vocab paths and data processing options")
 data_g.add_arg("train_set",           str,  None,  "Path to training data.")

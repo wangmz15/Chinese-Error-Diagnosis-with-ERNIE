@@ -1,3 +1,4 @@
+# coding: UTF-8
 #   Copyright (c) 2019 PaddlePaddle Authors. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,13 +22,21 @@ import time
 import argparse,csv
 import numpy as np
 import multiprocessing
-
+import pandas as pd
+from model.ernie import ErnieModel
 import paddle
 import paddle.fluid as fluid
 import paddle.fluid.layers as layers
 from model.classifier_remodel import *
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
+import seaborn as sns
+from model.transformer_encoder import *
 
-from model.ernie import ErnieModel
+
+
 
 def create_model(args,
                  pyreader_name,
@@ -82,7 +91,27 @@ def create_model(args,
     # j += 1
     #   print(words[j].shape)
 
-    # new_enc_out = enc_out
+    attn_scores = None
+    if args.attn:
+        attn_scores = multi_head_attention(
+            pre_process_layer(
+                enc_out,
+                'da',
+                0.0,
+                name='classifier_pre_att'),
+            None,
+            None,
+            attn_bias=self_attn_mask,
+            d_key=768,
+            d_value=768,
+            d_model=768,
+            n_head=1,
+            dropout_rate=0.0,
+            param_initializer=None,
+            name= 'classifier_att_score',
+            attention_only=True)
+        # print(attn_scores)
+    new_enc_out = enc_out
     # new_enc_out = classifier_concat_left_middle_right(enc_out)
     # new_enc_out = classifier_concat_left2_middle_right2(enc_out)
     # new_enc_out = classifier_maxPool_left_middle_right_33(enc_out)
@@ -121,17 +150,37 @@ def create_model(args,
     # new_enc_out = classifier_avgPool_left_right_21_concat_middle(enc_out)
     # print('new_enc_out',new_enc_out)
 
+
+    # enc_out = layer_maxPool_concat_last(all_layers, enc_out)
+    # print('enc_out', enc_out)
+    # new_enc_out = classifier_max_channel_attn(enc_out)
+    # print('new_enc_out',new_enc_out)
+
     # new_enc_out  = classifier_avg_channel_attn(enc_out)
     # new_enc_out  = classifier_max_channel_attn(enc_out)
     # new_enc_out  = classifier_avg_max_channel_attn(enc_out)
     # new_enc_out = classifier_max_word_attn(enc_out)
+    # new_enc_out = classifier_avg_word_attn(enc_out)
     # new_enc_out = classifier_max_channel_attn_max_word_attn(enc_out)
 
-    # new_enc_out  = classifier_avg_channel_attn_concat_last(enc_out)
-    # new_enc_out  = classifier_max_channel_attn_concat_last(enc_out)
+    # new_enc_out  = classifier_avg_channelAttn_concat_last(enc_out)
+    # new_enc_out  = classifier_max_channelAttn_concat_last(enc_out)
     # new_enc_out  = classifier_avg_max_channel_attn_concat_last(enc_out)
-    # new_enc_out = classifier_max_word_attn_concat_last(enc_out)
-    new_enc_out = classifier_max_channel_attn_max_word_attn_concat_last(enc_out)
+    # new_enc_out = classifier_max_wordAttn_concat_last(enc_out)
+    # new_enc_out = classifier_avg_wordAttn_concat_last(enc_out)
+    # new_enc_out = classifier_max_channelAttn_max_wordAttn_concat_last(enc_out)
+
+    # new_enc_out = channel_avg_max_attn(enc_out)
+    # new_enc_out = spacial_avg_max_attn(new_enc_out)
+
+    # new_enc_out = classifier_max_channel_attn(enc_out)
+    # new_enc_out=classifier_avgPool_left_middle_right_31_concat_middle(new_enc_out)
+
+    # enc_out = layer_maxPool_concat_last(all_layers, enc_out)
+    # new_enc_out = classifier_avgPool_left_middle_right_31_concat_middle(enc_out)
+
+    # enc_out = layer_maxPool(all_layers, enc_out)
+    # new_enc_out = classifier_avgPool_left_middle_right_31_concat_middle(enc_out)
 
     logits = fluid.layers.fc(
         input=new_enc_out,
@@ -185,7 +234,7 @@ def create_model(args,
                   "labels": ret_labels,
                   "infers": ret_infers,
                   "seq_lens": seq_lens,
-                  # "attn_scores":attn_scores,
+                  "attn_scores":attn_scores,
                   # "max_js": max_js,
                   "enc_out": new_enc_out,
 
@@ -298,7 +347,7 @@ def calculate_f1(num_label, num_infer, num_correct):
         f1 = 2 * precision * recall / (precision + recall)
     return precision, recall, f1
 
-def evaluate(exe, program, pyreader, graph_vars, tag_num, eval_phase, test_text = '', test_model_name='', dev_count=1):
+def evaluate(exe, program, pyreader, graph_vars, tag_num, eval_phase, test_text ='', test_model_name='', attn=False, dev_count=1):
     fetch_list = [graph_vars["labels"].name,
                   graph_vars["infers"].name,
                   graph_vars["seq_lens"].name]
@@ -345,16 +394,24 @@ def evaluate(exe, program, pyreader, graph_vars, tag_num, eval_phase, test_text 
         time_begin = time.time()
         pyreader.start()
         to_write = []
+        to_write_attn = []
         index = 1
 
         labels_map = {0:'Rb',1:'Ri',2:'Sb',3:'Si',4:'Mb',5:'Mi',6:'Wb',7:'Wi',8:'O'}
+        if attn:
+            fetch_list.append(graph_vars["attn_scores"].name)
+
         while True:
             try:
-                np_labels, np_infers, np_lens = exe.run(program=program, fetch_list=fetch_list)
+                outputs = exe.run(program=program, fetch_list=fetch_list)
+                np_labels, np_infers, np_lens = outputs[:3]
+                if attn:
+                    score = outputs[3]
+                    # print(np_lens[0][0])
+                    to_write_attn.extend([[l[1:len[0]-1] for l in s[1:len[0]-1]] for len, s in zip(np_lens, score)])
                 np_tmp = np_labels
                 np_labels = np_infers
                 np_infers = np_tmp
-                # print(len(np_labels), len(np_infers), len(np_lens))
 
                 predicts_id = []
                 origins_id = []
@@ -468,13 +525,58 @@ def evaluate(exe, program, pyreader, graph_vars, tag_num, eval_phase, test_text 
             test_result_write_dir = '/data/disk1/private/wangmuzi/data/ERNIE/cged_seg/test_result/'+ test_model_name.split('/')[-2]
             if not os.path.exists(test_result_write_dir):
                 os.makedirs(test_result_write_dir)
-            fw = open(test_result_write_dir+'/_'+test_model_name.split('/')[-1]+'_'+test_text.split('/')[-1].split('.')[0]+'.txt', 'w')
-            test_text =  open(test_text).readlines()[1:]
-            for i, [test_text,lin] in enumerate(zip(test_text,to_write)):
-                # fw.write(lin)
-                test_text = test_text.split('\t')[0].split(u"")
-                # print(test_text)
-                fw.write(' '.join([char+op for char, op in zip(test_text, lin)]) + '\n')
+            fw = open(test_result_write_dir +'/_' + test_model_name.split('/')[-1] +'_' + test_text.split('/')[-1].split('.')[0] + '.txt', 'w')
+            test_text_lst = open(test_text).readlines()[1:]
+
+            distance1 = []
+
+            for i, [[text, lin], attn_score] in enumerate(zip(zip(test_text_lst, to_write), to_write_attn)):
+                text = text.split('\t')[0].split(u"")
+                fw.write(' '.join([char + op for char, op in zip(text, lin)]) + '\n')
+                if attn:
+                    # if len(attn_score) != len(text):
+                    #     print(len(attn_score), len(text))
+                    # df = pd.DataFrame(attn_score, columns=text, index=text)
+                    # fig = plt.figure()
+                    # ax = fig.add_subplot(111)
+                    #
+                    # cax = ax.matshow(df, interpolation='nearest', cmap='hot_r')
+                    # fig.colorbar(cax)
+                    #
+                    # tick_spacing = 1
+                    # ax.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
+                    # ax.yaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
+                    #
+                    # ax.set_xticklabels([''] + list(df.columns))
+                    # ax.set_yticklabels([''] + list(df.index))
+                    #
+                    # for y in range(len(attn_score)):
+                    #     for x in range(len(attn_score)):
+                    #         if attn_score[y][x] < 0.01:
+                    #             continue
+                    #         if x == y:
+                    #             plt.text(x, y, '%0.4f'%attn_score[y][x], horizontalalignment='center',
+                    #                      verticalalignment='center', fontsize=7, color = "white")
+                    #         else:
+                    #             plt.text(x, y, '%0.4f'%(attn_score[y][x]), horizontalalignment='center', verticalalignment='center',fontsize=7)
+                    # plt.xticks(fontsize=15)
+                    # plt.yticks(fontsize=15)
+                    #
+                    # plt.savefig(test_result_write_dir +'/' + test_model_name.split('/')[-1] +'_' + test_text.split('/')[-1].split('.')[0] + str(i) + '.png')
+                    # plt.close('all')
+
+                    for i in range(len(attn_score)):
+                        mx = -1
+                        for j in range(len(attn_score)):
+                            if j == i:
+                                continue
+                            if attn_score[i][j] > mx:
+                                mx = attn_score[i][j]
+                                distance1.append(abs(i-j))
+            if attn:
+                print(distance1)
+                plt.hist(np.asarray(distance1, dtype=np.float32), bins=40, normed=0, facecolor="blue", edgecolor="black", alpha=0.7)
+                plt.savefig(test_result_write_dir+'/maxAttnDistance.png')
 
         precision1, recall1, f11 = calculate_f1(total_label1, total_infer1, total_correct1)
         acc1 = (total_correct1 + total_acc_correct1) * 1.0/total_example1

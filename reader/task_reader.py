@@ -326,13 +326,15 @@ class SequenceLabelReader(BaseReader):
             if label.endswith("b"):
                 sub_label = label[:-1] + 'i'
             ret_labels.extend([sub_label] * (len(sub_token) - 1))
-
+        # print(ret_tokens)
         assert len(ret_tokens) == len(ret_labels)
         return ret_tokens, ret_labels
 
     def _convert_example_to_record(self, example, max_seq_length, tokenizer):
         tokens = tokenization.convert_to_unicode(example.text_a).split(u"")
         labels = tokenization.convert_to_unicode(example.label).split(u"")
+        # print(tokens)
+
         if len(tokens) != len(labels):
             return ''
         tokens, labels = self._reseg_token_label(tokens, labels, tokenizer)
@@ -340,7 +342,6 @@ class SequenceLabelReader(BaseReader):
         if len(tokens) > max_seq_length - 2:
             tokens = tokens[0:(max_seq_length - 2)]
             labels = labels[0:(max_seq_length - 2)]
-
 
         tokens = ["[CLS]"] + tokens + ["[SEP]"]
         token_ids = tokenizer.convert_tokens_to_ids(tokens)

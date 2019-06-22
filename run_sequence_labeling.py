@@ -249,8 +249,8 @@ def main(args):
                         fluid.io.save_persistables(exe, save_path, train_program)
                         print('save train model at step '+ str(steps))
 
-                valid_step = args.validation_steps if (steps*0.1/max_train_steps*0.1) > 1/10 else args.validation_steps*5
-                if steps % valid_step == 0:
+                # valid_step = args.validation_steps if (steps*0.1/max_train_steps*0.1) > 1/10 else args.validation_steps*5
+                if steps % args.validation_steps == 0:
                     # evaluate dev set
                     if args.do_val:
                         test_pyreader.decorate_tensor_provider(
@@ -304,7 +304,7 @@ def main(args):
                 epoch=1,
                 shuffle=False))
         print("Final test result:")
-        evaluate(exe, test_prog, test_pyreader, graph_vars, args.num_labels, "test_final", args.test_set, args.init_checkpoint)
+        evaluate(exe, test_prog, test_pyreader, graph_vars, args.num_labels, "test_final", args.test_set, args.init_checkpoint, attn=args.attn)
 
 
 if __name__ == '__main__':
