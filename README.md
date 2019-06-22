@@ -157,7 +157,7 @@ ChnSentiCorp 是中文情感分析数据集，其目标是判断一段话的情�
 
  ```text
 nlpcc-dbqa是由国际自然语言处理和中文计算会议NLPCC于2016年举办的评测任务，其目标是选择能够回答问题的答案。[链接: http://tcci.ccf.org.cn/conference/2016/dldoc/evagline2.pdf]
-```
+ ```
 
 ### 模型&数据
 
@@ -261,3 +261,29 @@ text_a  text_b  label
 [dev evaluation] f1: 0.951949, precision: 0.944636, recall: 0.959376, elapsed time: 19.156693 s
 [test evaluation] f1: 0.937390, precision: 0.925988, recall: 0.949077, elapsed time: 36.565929 s
 ```
+
+
+# Chinese Grammatical Error Diagnosis Based on ERNIE
+
+
+
+### 数据预处理
+
+首先将数据处理为如下形式
+
+```
+到底是健康重要，还是粮食产生量重要呢？    O O O O O O O O O O O O Sb Si O O O O O O O O O
+```
+
+脚本在 data_process_script/ 中
+
+### 序列标注任务
+
+#### ERNIE + Linear Layer 完成序列标注
+
+代码在run_sequence_labeling.py中，运行脚本run_msra_ner.py中的某条可出现相应结果
+
+#### 线性层进行改进
+
+classifier_remodel.py: 定义了各种各样的模型改进方法
+
